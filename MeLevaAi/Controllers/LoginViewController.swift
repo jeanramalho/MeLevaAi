@@ -1,15 +1,15 @@
 //
-//  SplashSceenViewController.swift
+//  LoginViewController.swift
 //  MeLevaAi
 //
-//  Created by Jean Ramalho on 11/04/25.
+//  Created by Jean Ramalho on 17/04/25.
 //
 import Foundation
 import UIKit
 
-class SplashSceenViewController: UIViewController {
+class LoginViewController: UIViewController {
     
-    private let contentView: SplashScreenView = SplashScreenView()
+    private let contentView: LoginView = LoginView()
 
     
     override func viewDidLoad() {
@@ -31,6 +31,6 @@ class SplashSceenViewController: UIViewController {
         
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.setConstraintsToParent(self.view)
-       
+
     }
 }
