@@ -32,6 +32,8 @@ class LoginViewController: UIViewController {
         //adiciona o gesto a tela
         contentView.addGestureRecognizer(tapGesture)
         
+        contentView.signUpButton.addTarget(self, action: #selector(showSignUpView), for: .touchUpInside)
+        
     }
     
     private func setHierarchy(){
@@ -47,5 +49,12 @@ class LoginViewController: UIViewController {
     
     @objc private func dismissKeyboard(){
         view.endEditing(true)
+    }
+    
+    @objc private func showSignUpView(){
+        
+        let signUpViewController = SingUpViewController()
+        
+        self.navigationController?.setViewControllers([signUpViewController], animated: true)
     }
 }

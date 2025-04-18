@@ -254,11 +254,46 @@ class signUpView: UIView {
         mainStackView.addArrangedSubview(driveSwitchStackView)
         mainStackView.addArrangedSubview(signUpButton)
         
+        nameStackView.addArrangedSubview(nameLabel)
+        nameStackView.addArrangedSubview(nameTextField)
+        
+        lastNameStackView.addArrangedSubview(lastNameLabel)
+        lastNameStackView.addArrangedSubview(lastNameTextField)
+        
+        emailStackView.addArrangedSubview(emailLabel)
+        emailStackView.addArrangedSubview(emailTextField)
+        
+        passwordStackView.addArrangedSubview(passwordLabel)
+        passwordStackView.addArrangedSubview(passwordTextField)
+        
+        confirmPasswordStackView.addArrangedSubview(confirmPasswordLabel)
+        confirmPasswordStackView.addArrangedSubview(confirmPasswordTextField)
+        
+        driveSwitchStackView.addArrangedSubview(driveLabel)
+        driveSwitchStackView.addArrangedSubview(driveSwitch)
+        driveSwitchStackView.addArrangedSubview(passLabel)
         
         
     }
     
     private func setConstraints(){
-        
+        NSLayoutConstraint.activate([
+            
+            mainStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20),
+            mainStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18),
+            mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18),
+            
+            nameTextField.heightAnchor.constraint(equalToConstant: 60),
+            
+            lastNameTextField.heightAnchor.constraint(equalToConstant: 60),
+            
+            emailTextField.heightAnchor.constraint(equalToConstant: 60),
+            
+            passwordTextField.heightAnchor.constraint(equalToConstant: 60),
+            
+            confirmPasswordTextField.heightAnchor.constraint(equalToConstant: 60),
+            
+            driveSwitch.heightAnchor.constraint(equalToConstant: 60),
+        ])
     }
 }
