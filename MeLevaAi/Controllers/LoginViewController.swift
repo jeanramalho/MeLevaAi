@@ -19,8 +19,19 @@ class LoginViewController: UIViewController {
     
     private func setup(){
         
+        setupContentView()
         setHierarchy()
         setConstraints()
+    }
+    
+    private func setupContentView(){
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        //permite que outros toques, como toques em botões continuem funcionando
+        tapGesture.cancelsTouchesInView = false
+        //adiciona o gesto a tela
+        contentView.addGestureRecognizer(tapGesture)
+        
     }
     
     private func setHierarchy(){
@@ -32,5 +43,9 @@ class LoginViewController: UIViewController {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.setConstraintsToParent(self.view)
 
+    }
+    
+    @objc private func dismissKeyboard(){
+        view.endEditing(true)
     }
 }
