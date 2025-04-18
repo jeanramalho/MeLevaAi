@@ -19,18 +19,13 @@ class LoginViewController: UIViewController {
     
     private func setup(){
         
+        hideKeyboard(self, contentView: self.contentView)
         setupContentView()
         setHierarchy()
         setConstraints()
     }
     
     private func setupContentView(){
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
-        //permite que outros toques, como toques em botões continuem funcionando
-        tapGesture.cancelsTouchesInView = false
-        //adiciona o gesto a tela
-        contentView.addGestureRecognizer(tapGesture)
         
         contentView.signUpButton.addTarget(self, action: #selector(showSignUpView), for: .touchUpInside)
         
@@ -47,14 +42,12 @@ class LoginViewController: UIViewController {
 
     }
     
-    @objc private func dismissKeyboard(){
-        view.endEditing(true)
-    }
+
     
     @objc private func showSignUpView(){
         
         let signUpViewController = SingUpViewController()
         
-        self.navigationController?.setViewControllers([signUpViewController], animated: true)
+        self.navigationController?.pushViewController(signUpViewController, animated: true)
     }
 }

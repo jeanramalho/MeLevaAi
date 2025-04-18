@@ -13,12 +13,14 @@ class SingUpViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setup()
     }
     
     private func setup(){
         
         self.title = "Cadastre-se"
         
+        hideKeyboard(self, contentView: self.contentView)
         setupNavigationBar()
         setHierarchy()
         setConstraints()

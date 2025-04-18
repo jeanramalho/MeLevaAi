@@ -31,4 +31,16 @@ extension UIViewController {
                    navigationbar.tintColor = Colors.defaultYellow
                }
     }
+    
+    public func hideKeyboard(_ target: UIViewController, contentView: UIView){
+        let tapGesture = UITapGestureRecognizer(target: target, action: #selector(dismissKeyboard))
+        //permite que outros toques, como toques em botões continuem funcionando
+        tapGesture.cancelsTouchesInView = false
+        //adiciona o gesto a tela
+        contentView.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func dismissKeyboard(){
+        view.endEditing(true)
+    }
 }

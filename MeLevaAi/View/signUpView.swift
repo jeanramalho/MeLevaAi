@@ -13,6 +13,7 @@ class signUpView: UIView {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
+        stackView.spacing = 12
         stackView.alignment = .fill
         stackView.distribution = .equalSpacing
         return stackView
@@ -163,14 +164,14 @@ class signUpView: UIView {
         label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         label.textColor = Colors.darkSecondary
         label.textAlignment = .left
-        label.text = "Senha:"
+        label.text = "Confirmar senha:"
         return label
     }()
     
     lazy var confirmPasswordTextField: PaddedTextField = {
         let textField = PaddedTextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.placeholder = "Digite sua senha..."
+        textField.placeholder = "Confirme sua senha..."
         textField.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
         textField.isSecureTextEntry = true
         textField.textContentType = .oneTimeCode
@@ -186,14 +187,13 @@ class signUpView: UIView {
         stackView.axis = .horizontal
         stackView.spacing = 12
         stackView.alignment = .fill
-        stackView.distribution = .equalSpacing
+        stackView.distribution = .equalCentering
         return stackView
     }()
     
     lazy var driveSwitch: UISwitch = {
         let driveSwitch = UISwitch()
         driveSwitch.translatesAutoresizingMaskIntoConstraints = false
-        driveSwitch.isEnabled = false
         return driveSwitch
     }()
     
@@ -202,6 +202,7 @@ class signUpView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         label.textColor = Colors.darkPrimary
+        label.textAlignment = .center
         label.text = "Motorista"
         return label
     }()
@@ -211,6 +212,7 @@ class signUpView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         label.textColor = Colors.darkPrimary
+        label.textAlignment = .center
         label.text = "Passageiro"
         return label
     }()
@@ -247,7 +249,7 @@ class signUpView: UIView {
         addSubview(mainStackView)
         
         mainStackView.addArrangedSubview(nameStackView)
-        mainStackView.addArrangedSubview(lastNameLabel)
+        mainStackView.addArrangedSubview(lastNameStackView)
         mainStackView.addArrangedSubview(emailStackView)
         mainStackView.addArrangedSubview(passwordStackView)
         mainStackView.addArrangedSubview(confirmPasswordStackView)
@@ -293,7 +295,7 @@ class signUpView: UIView {
             
             confirmPasswordTextField.heightAnchor.constraint(equalToConstant: 60),
             
-            driveSwitch.heightAnchor.constraint(equalToConstant: 60),
+            signUpButton.heightAnchor.constraint(equalToConstant: 60),
         ])
     }
 }
