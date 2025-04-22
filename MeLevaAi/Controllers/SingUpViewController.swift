@@ -15,6 +15,7 @@ class SingUpViewController: UIViewController {
     private lazy var mainScrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollView.backgroundColor = .white
         return scrollView
     }()
     
@@ -45,6 +46,14 @@ class SingUpViewController: UIViewController {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         mainScrollView.setConstraintsToParent(self.view)
         contentView.setConstraintsToParent(self.mainScrollView)
+        
+        NSLayoutConstraint.activate([
+            mainScrollView.heightAnchor.constraint(equalTo: view.heightAnchor),
+            mainScrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            
+            contentView.heightAnchor.constraint(equalTo: mainScrollView.heightAnchor),
+            contentView.widthAnchor.constraint(equalTo: mainScrollView.widthAnchor),
+        ])
     }
     
     deinit {
