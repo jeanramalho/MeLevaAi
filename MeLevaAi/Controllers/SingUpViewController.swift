@@ -45,4 +45,8 @@ class SingUpViewController: UIViewController {
         mainScrollView.setConstraintsToParent(self.view)
         contentView.setConstraintsToParent(self.mainScrollView)
     }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
 }
