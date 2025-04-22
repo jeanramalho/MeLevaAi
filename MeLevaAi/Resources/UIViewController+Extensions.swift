@@ -11,6 +11,8 @@ extension UIViewController {
     
     public func setupNavigationBar(){
         
+        self.navigationController?.navigationBar.isHidden = false
+        
         if let navigationbar = navigationController?.navigationBar {
                    
                    let navigationBarLayout = UINavigationBarAppearance()

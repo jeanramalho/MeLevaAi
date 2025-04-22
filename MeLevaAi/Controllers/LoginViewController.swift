@@ -27,7 +27,6 @@ class LoginViewController: UIViewController {
     
     private func setupContentView(){
         
-        self.navigationController?.navigationBar.isHidden = true
         
         contentView.signUpButton.addTarget(self, action: #selector(showSignUpView), for: .touchUpInside)
         
