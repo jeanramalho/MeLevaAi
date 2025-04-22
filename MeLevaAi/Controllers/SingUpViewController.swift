@@ -9,7 +9,14 @@ import UIKit
 
 class SingUpViewController: UIViewController {
     
-    let contentView: signUpView = signUpView()
+
+    private let contentView: signUpView = signUpView()
+    
+    private lazy var mainScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,11 +35,14 @@ class SingUpViewController: UIViewController {
     }
     
     private func setHierarchy(){
-        view.addSubview(contentView)
+        view.addSubview(mainScrollView)
+        
+        mainScrollView.addSubview(contentView)
     }
     
     private func setConstraints(){
         contentView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.setConstraintsToParent(self.view)
+        mainScrollView.setConstraintsToParent(self.view)
+        contentView.setConstraintsToParent(self.mainScrollView)
     }
 }
