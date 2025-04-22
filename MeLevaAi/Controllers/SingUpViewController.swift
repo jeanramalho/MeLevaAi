@@ -28,6 +28,7 @@ class SingUpViewController: UIViewController {
         
         self.title = "Cadastre-se"
         
+        setupKeyboardObserver(for: mainScrollView)
         hideKeyboard(self, contentView: self.contentView)
         setupNavigationBar()
         setHierarchy()
