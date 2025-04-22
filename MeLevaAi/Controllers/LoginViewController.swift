@@ -17,8 +17,13 @@ class LoginViewController: UIViewController {
         setup()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        hideNavigationBar()
+    }
+    
     private func setup(){
         
+        hideNavigationBar()
         hideKeyboard(self, contentView: self.contentView)
         setupContentView()
         setHierarchy()

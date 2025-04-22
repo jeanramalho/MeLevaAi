@@ -16,6 +16,7 @@ class SingUpViewController: UIViewController {
         setup()
     }
     
+    
     private func setup(){
         
         self.title = "Cadastre-se"
