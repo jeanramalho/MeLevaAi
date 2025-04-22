@@ -9,6 +9,18 @@ import UIKit
 
 extension UIViewController {
     
+    public func setupKeyboardObserver(for scrollView: UIScrollView){
+        // Observa quando o teclado aparecer
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) {[weak self] notification in
+            self?.keyboardWillShow(notification: notification, scrollView: scrollView)
+        }
+        
+        // Observa quando o teclado sumir
+        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { [weak self] notification in
+            self?.keyboardWillHide(notification: notification, scrollView: scrollView)
+        }
+    }
+    
     public func hideNavigationBar(){
         self.navigationController?.navigationBar.isHidden = true
     }
@@ -48,5 +60,21 @@ extension UIViewController {
     
     @objc private func dismissKeyboard(){
         view.endEditing(true)
+    }
+    
+    private func keyboardWillShow(notification: Notification, scrollView: UIScrollView){
+        
+        // Pega a altura do teclado
+        guard let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {return}
+        
+        let bottomInset = keyboardFrame.height
+        scrollView.contentInset.bottom = bottomInset
+        scrollView.verticalScrollIndicatorInsets.bottom = bottomInset
+        
+    }
+    
+    private func keyboardWillHide(notification: Notification, scrollView: UIScrollView){
+        scrollView.contentInset.bottom = 0
+        scrollView.verticalScrollIndicatorInsets.bottom = 0
     }
 }
