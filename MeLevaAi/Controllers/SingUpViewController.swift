@@ -57,6 +57,6 @@ class SingUpViewController: UIViewController {
     }
     
     deinit {
-        NotificationCenter.default.removeObserver(self)
+        removeKeyboardObservers()
     }
 }
