@@ -17,4 +17,17 @@ extension UIView {
                self.bottomAnchor.constraint(equalTo: parent.bottomAnchor)
            ])
        }
+    
+    public func findFirstResponder() -> UIView? {
+        
+        if self.isFirstResponder {
+            return self
+        }
+        for subview in self.subviews {
+            if let firstResponder = subview.findFirstResponder() {
+                return firstResponder
+            }
+        }
+        return nil
+    }
 }

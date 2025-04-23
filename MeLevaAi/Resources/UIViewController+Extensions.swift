@@ -83,17 +83,28 @@ extension UIViewController {
         
         // Pega a altura do teclado
         guard let scrollView = keyboardAwareScrollView,
-                   let userInfo = notification.userInfo,
-                   let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-                   let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
+              let userInfo = notification.userInfo,
+              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
 
-             let bottomInset = keyboardFrame.height - view.safeAreaInsets.bottom
+        let keyboardHeight = keyboardFrame.height - view.safeAreaInsets.bottom
 
-             UIView.animate(withDuration: duration) {
-                 scrollView.contentInset.bottom = bottomInset
-                 scrollView.verticalScrollIndicatorInsets.bottom = bottomInset
-             }
+        // ⬇️ Diminua esse valor pra evitar excesso de espaço
+        let bottomInset = keyboardHeight - 50
+
+        UIView.animate(withDuration: duration) {
+            scrollView.contentInset.bottom = bottomInset
+            scrollView.verticalScrollIndicatorInsets.bottom = bottomInset
+        }
         
+        if let activeField = view.findFirstResponder() {
+            let convertedFrame = scrollView.convert(activeField.frame, from: activeField.superview)
+            let visibleArea = scrollView.bounds.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0))
+
+            if !visibleArea.contains(convertedFrame.origin) {
+                scrollView.scrollRectToVisible(convertedFrame, animated: true)
+            }
+        }
     }
     
     private func keyboardWillHide(notification: Notification, scrollView: UIScrollView){
