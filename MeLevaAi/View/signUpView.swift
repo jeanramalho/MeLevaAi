@@ -9,6 +9,12 @@ import UIKit
 
 class signUpView: UIView {
     
+    private lazy var mainScrollView: UIScrollView = {
+        let scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        return scrollView
+    }()
+    
     private lazy var mainStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
@@ -246,7 +252,8 @@ class signUpView: UIView {
     
     private func setHierarchy(){
         
-        addSubview(mainStackView)
+        addSubview(mainScrollView)
+        mainScrollView.addSubview(mainStackView)
         
         mainStackView.addArrangedSubview(nameStackView)
         mainStackView.addArrangedSubview(lastNameStackView)
@@ -279,11 +286,20 @@ class signUpView: UIView {
     }
     
     private func setConstraints(){
+        
         NSLayoutConstraint.activate([
             
-            mainStackView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20),
-            mainStackView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18),
-            mainStackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18),
+            mainScrollView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 20),
+            mainScrollView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18),
+            mainScrollView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18),
+            mainScrollView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor),
+            
+            mainStackView.topAnchor.constraint(equalTo: mainScrollView.topAnchor),
+            mainStackView.leadingAnchor.constraint(equalTo: mainScrollView.leadingAnchor),
+            mainStackView.trailingAnchor.constraint(equalTo: mainScrollView.trailingAnchor),
+            mainStackView.bottomAnchor.constraint(equalTo: mainScrollView.bottomAnchor),
+            mainStackView.widthAnchor.constraint(equalTo: mainScrollView.widthAnchor),
+
             
             nameTextField.heightAnchor.constraint(equalToConstant: 60),
             

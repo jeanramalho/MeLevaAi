@@ -9,33 +9,16 @@ import UIKit
 
 extension UIViewController {
     
-    public func setupKeyboardObserver(for scrollView: UIScrollView){
+    public func setupKeyboardObserver(){
         // Observa quando o teclado aparecer
-        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillShowNotification, object: nil, queue: .main) {[weak self] notification in
-            self?.keyboardWillShow(notification: notification, scrollView: scrollView)
-        }
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         
         // Observa quando o teclado sumir
-        NotificationCenter.default.addObserver(forName: UIResponder.keyboardWillHideNotification, object: nil, queue: .main) { [weak self] notification in
-            self?.keyboardWillHide(notification: notification, scrollView: scrollView)
-        }
-        
-        self.keyboardAwareScrollView = scrollView
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+   
     }
     
-    private struct AssociatedKeys {
-        static var scrollViewKey = "keyboardAwareScrollView"
-    }
-    
-    private var keyboardAwareScrollView: UIScrollView? {
-        
-        get {
-                   return objc_getAssociatedObject(self, &AssociatedKeys.scrollViewKey) as? UIScrollView
-               }
-        set {
-                   objc_setAssociatedObject(self, &AssociatedKeys.scrollViewKey, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-               }
-    }
+
     
     
     public func hideNavigationBar(){
@@ -79,47 +62,32 @@ extension UIViewController {
         view.endEditing(true)
     }
     
-    private func keyboardWillShow(notification: Notification, scrollView: UIScrollView){
+    @objc private func keyboardWillShow(notification: Notification){
+        // pega a altura do teclado
+        guard let userInfo = notification.userInfo,
+                 let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else { return }
+           
+           let keyboardHeight = keyboardFrame.height
+           
+           if let scrollView = self.view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView {
+               let insets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+               scrollView.contentInset = insets
+               scrollView.scrollIndicatorInsets = insets
+           }
         
-        // Pega a altura do teclado
-        guard let scrollView = keyboardAwareScrollView,
-              let userInfo = notification.userInfo,
-              let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-              let duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
-
-        let keyboardHeight = keyboardFrame.height - view.safeAreaInsets.bottom
-
-        // ⬇️ Diminua esse valor pra evitar excesso de espaço
-        let bottomInset = keyboardHeight - 50
-
-        UIView.animate(withDuration: duration) {
-            scrollView.contentInset.bottom = bottomInset
-            scrollView.verticalScrollIndicatorInsets.bottom = bottomInset
-        }
-        
-        if let activeField = view.findFirstResponder() {
-            let convertedFrame = scrollView.convert(activeField.frame, from: activeField.superview)
-            let visibleArea = scrollView.bounds.inset(by: UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0))
-
-            if !visibleArea.contains(convertedFrame.origin) {
-                scrollView.scrollRectToVisible(convertedFrame, animated: true)
-            }
-        }
     }
-    
-    private func keyboardWillHide(notification: Notification, scrollView: UIScrollView){
-        guard let scrollView = keyboardAwareScrollView,
-                    let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval else { return }
-
-              UIView.animate(withDuration: duration) {
-                  scrollView.contentInset.bottom = 0
-                  scrollView.verticalScrollIndicatorInsets.bottom = 0
-              }
+ 
+    @objc private func keyboardWillHide(){
+        
+        // volta para posição original caso nao esteja
+        if let scrollView = self.view.subviews.first(where: { $0 is UIScrollView }) as? UIScrollView {
+              scrollView.contentInset = .zero
+              scrollView.scrollIndicatorInsets = .zero
+          }
     }
     
     // Para evitar memory leak
     func removeKeyboardObservers() {
-           NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-           NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.removeObserver(self)
        }
 }

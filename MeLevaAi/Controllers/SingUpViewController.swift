@@ -12,13 +12,6 @@ class SingUpViewController: UIViewController {
 
     private let contentView: signUpView = signUpView()
     
-    private lazy var mainScrollView: UIScrollView = {
-        let scrollView = UIScrollView()
-        scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.backgroundColor = .white
-        return scrollView
-    }()
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
@@ -29,7 +22,7 @@ class SingUpViewController: UIViewController {
         
         self.title = "Cadastre-se"
         
-        setupKeyboardObserver(for: mainScrollView)
+        setupKeyboardObserver()
         hideKeyboard(self, contentView: self.contentView)
         setupNavigationBar()
         setHierarchy()
@@ -37,23 +30,13 @@ class SingUpViewController: UIViewController {
     }
     
     private func setHierarchy(){
-        view.addSubview(mainScrollView)
-        
-        mainScrollView.addSubview(contentView)
+        view.addSubview(contentView)
     }
     
     private func setConstraints(){
         contentView.translatesAutoresizingMaskIntoConstraints = false
-        mainScrollView.setConstraintsToParent(self.view)
-        contentView.setConstraintsToParent(self.mainScrollView)
-        
-        NSLayoutConstraint.activate([
-            mainScrollView.heightAnchor.constraint(equalTo: view.heightAnchor),
-            mainScrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
-            
-            contentView.heightAnchor.constraint(equalTo: mainScrollView.heightAnchor),
-            contentView.widthAnchor.constraint(equalTo: mainScrollView.widthAnchor),
-        ])
+        contentView.setConstraintsToParent(self.view)
+
     }
     
     deinit {
