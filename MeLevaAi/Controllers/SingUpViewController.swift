@@ -11,6 +11,7 @@ class SingUpViewController: UIViewController {
     
 
     private let contentView: signUpView = signUpView()
+    private let authService = Authentication()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,6 +22,9 @@ class SingUpViewController: UIViewController {
     private func setup(){
         
         self.title = "Cadastre-se"
+        
+        let signUpButton = contentView.signUpButton
+        signUpButton.addTarget(self, action: #selector(createUser), for: .touchUpInside)
         
         setupKeyboardObserver(contentView: contentView)
         hideKeyboard(self, contentView: self.contentView)
@@ -37,6 +41,42 @@ class SingUpViewController: UIViewController {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.setConstraintsToParent(self.view)
 
+    }
+    
+    @objc private func createUser(){
+ 
+        let name = contentView.nameTextField.text ?? ""
+        let lastName = contentView.lastNameTextField.text ?? ""
+        let email = contentView.emailTextField.text ?? ""
+        let password = contentView.passwordTextField.text ?? ""
+        let confirmPassword = contentView.confirmPasswordTextField.text ?? ""
+        let driver = contentView.driveSwitch.isOn
+        
+        let fullName = "\(String(describing: name)) \(String(describing: lastName))"
+        
+        if name == "" || lastName == "" || email == "" || password == "" || confirmPassword == "" {
+            
+            let alert = CustomAlert(title: "Preencha todos os campos", message: "Para continuar seu cadastro preencha todos os campos solicitados!")
+            self.present(alert.alert(), animated: true, completion: nil)
+        }
+        
+        if password == confirmPassword {
+            
+            authService.createUser(email: email, password: password, userName: fullName, driver: driver) { success in
+                if success {
+                    print("Usuário criado!")
+                } else {
+                    let alert = CustomAlert(title: "Erro ao criar usuário!", message: "Ocorreu um erro ao criar seu usuário. Por favor tente novamente!")
+                    print("Erro ao criar usuário!")
+                }
+            }
+            
+        } else {
+            
+            let alert = CustomAlert(title: "Senhas não correspondem!", message: "Os campos senha e confirmar senha devem possuir a mesma senha. Revise os dados e tente novavemente!")
+            self.present(alert.alert(), animated: true, completion: nil)
+        }
+        
     }
     
     deinit {

@@ -278,9 +278,9 @@ class signUpView: UIView {
         confirmPasswordStackView.addArrangedSubview(confirmPasswordLabel)
         confirmPasswordStackView.addArrangedSubview(confirmPasswordTextField)
         
-        driveSwitchStackView.addArrangedSubview(driveLabel)
-        driveSwitchStackView.addArrangedSubview(driveSwitch)
         driveSwitchStackView.addArrangedSubview(passLabel)
+        driveSwitchStackView.addArrangedSubview(driveSwitch)
+        driveSwitchStackView.addArrangedSubview(driveLabel)
         
         
     }

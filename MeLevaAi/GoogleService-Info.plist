@@ -26,5 +26,7 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:1045248267088:ios:2db163ce3782e14754d255</string>
+	<key>DATABASE_URL</key>
+	<string>https://melevaai-58cd1-default-rtdb.firebaseio.com</string>
 </dict>
 </plist>
