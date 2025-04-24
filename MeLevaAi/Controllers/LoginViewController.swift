@@ -10,6 +10,7 @@ import UIKit
 class LoginViewController: UIViewController {
     
     private let contentView: LoginView = LoginView()
+    private let authService = Authentication()
 
     
     override func viewDidLoad() {
@@ -32,7 +33,7 @@ class LoginViewController: UIViewController {
     
     private func setupContentView(){
         
-        
+        contentView.loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
         contentView.signUpButton.addTarget(self, action: #selector(showSignUpView), for: .touchUpInside)
         
     }
@@ -47,7 +48,6 @@ class LoginViewController: UIViewController {
         contentView.setConstraintsToParent(self.view)
 
     }
-    
 
     
     @objc private func showSignUpView(){
@@ -55,5 +55,26 @@ class LoginViewController: UIViewController {
         let signUpViewController = SingUpViewController()
         
         self.navigationController?.pushViewController(signUpViewController, animated: true)
+    }
+    
+    @objc private func login(){
+        
+        guard let email = contentView.emailTextField.text as String? else {return}
+        guard let password = contentView.passwordTextField.text as String? else {return}
+        
+        if email.isEmpty || password.isEmpty {
+            let alert = CustomAlert(title: "Preencha todos os campos!", message: "É necessário que você preencha todos os campos com dados válidos para fazer login")
+            present(alert.alert(), animated: true, completion: nil)
+            print("É necessário preencher todos os campos!")
+        }
+        
+        authService.loginUser(email: email, password: password) { result in
+            switch result {
+            case .success(let success):
+                print("Login realizado com sucesso!")
+            case .failure(let error):
+                print("Erro ao realizar Login: \(error.localizedDescription)")
+            }
+        }
     }
 }
