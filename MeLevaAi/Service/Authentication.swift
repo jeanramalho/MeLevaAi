@@ -44,5 +44,24 @@ class Authentication {
         }
     }
     
+    public func loginUser(email: String, password: String, completion: @escaping (Result<Void, AuthError>) -> Void){
+        
+        auth.signIn(withEmail: email, password: password) { user, error in
+            
+            if let error = error as NSError? {
+                
+                switch AuthErrorCode(rawValue: error.code) {
+                case .wrongPassword, .invalidEmail:
+                    completion(.failure(.invalidCredentials))
+                case .userNotFound:
+                    completion(.failure(.userNotFound))
+                }
+            }
+            
+            
+            
+        }
+    }
+    
     
 }
