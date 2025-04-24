@@ -46,7 +46,7 @@ class Authentication {
     
     public func loginUser(email: String, password: String, completion: @escaping (Result<Void, AuthError>) -> Void){
         
-        auth.signIn(withEmail: email, password: password) { user, error in
+        auth.signIn(withEmail: email, password: password) { result, error in
             
             if let error = error as NSError? {
                 
@@ -55,11 +55,17 @@ class Authentication {
                     completion(.failure(.invalidCredentials))
                 case .userNotFound:
                     completion(.failure(.userNotFound))
+                default:
+                    completion(.failure(.custom(message: error.localizedDescription)))
                 }
+                
+                return
             }
-            
-            
-            
+            guard result?.user != nil else {
+                completion(.failure(.userNotFound))
+                return
+            }
+            completion(.success(()))
         }
     }
     
