@@ -233,6 +233,8 @@ class signUpView: UIView {
         return button
     }()
     
+    private lazy var showPassword = "
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
