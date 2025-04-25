@@ -69,5 +69,9 @@ class Authentication {
         }
     }
     
+    public func checkAuth(){
+        
+    }
+    
     
 }
