@@ -69,8 +69,16 @@ class Authentication {
         }
     }
     
-    public func checkAuth(){
-        
+    public func checkAuth(completion: @escaping (Bool) -> Void){
+        self.auth.addStateDidChangeListener { auth, user in
+            if let loggedUser = user {
+                completion(true)
+                return
+            } else {
+                completion(false)
+                return
+            }
+        }
     }
     
     
