@@ -26,11 +26,17 @@ class SingUpViewController: UIViewController {
         let signUpButton = contentView.signUpButton
         signUpButton.addTarget(self, action: #selector(createUser), for: .touchUpInside)
         
+        setupContentView()
         setupKeyboardObserver(contentView: contentView)
         hideKeyboard(self, contentView: self.contentView)
         setupNavigationBar()
         setHierarchy()
         setConstraints()
+    }
+    
+    private func setupContentView(){
+        
+        contentView.showPasswordSwitch.addTarget(self, action: #selector(showPassword), for: .valueChanged)
     }
     
     private func setHierarchy(){
@@ -41,6 +47,20 @@ class SingUpViewController: UIViewController {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.setConstraintsToParent(self.view)
 
+    }
+    
+    @objc private func showPassword(){
+        let showPasswordSwitch = contentView.showPasswordSwitch
+        let passwordTextField = contentView.passwordTextField
+        let confirmPasswordTextField = contentView.confirmPasswordTextField
+        
+        if showPasswordSwitch.isOn == true {
+            passwordTextField.isSecureTextEntry = false
+            confirmPasswordTextField.isSecureTextEntry = false
+        } else {
+            passwordTextField.isSecureTextEntry = true
+            confirmPasswordTextField.isSecureTextEntry = true
+        }
     }
     
     @objc private func createUser(){

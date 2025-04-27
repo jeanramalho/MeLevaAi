@@ -23,7 +23,7 @@ class LoginViewController: UIViewController {
     }
     
     private func setup(){
-        
+
         isUserLogged()
         hideNavigationBar()
         hideKeyboard(self, contentView: self.contentView)
@@ -46,6 +46,7 @@ class LoginViewController: UIViewController {
         
         contentView.loginButton.addTarget(self, action: #selector(login), for: .touchUpInside)
         contentView.signUpButton.addTarget(self, action: #selector(showSignUpView), for: .touchUpInside)
+        contentView.showPasswordSwitch.addTarget(self, action: #selector(showPassword), for: .valueChanged)
         
     }
     
@@ -60,13 +61,15 @@ class LoginViewController: UIViewController {
 
     }
     
-    private func showPassword(){
+    @objc private func showPassword(){
         
         let showPasswordSwitch = contentView.showPasswordSwitch
         let passwordTextField = contentView.passwordTextField
         
         if showPasswordSwitch.isOn == true {
             passwordTextField.isSecureTextEntry = false
+        } else {
+            passwordTextField.isSecureTextEntry = true
         }
         
     }
