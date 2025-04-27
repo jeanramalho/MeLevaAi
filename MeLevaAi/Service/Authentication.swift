@@ -81,5 +81,14 @@ class Authentication {
         }
     }
     
+    public func logOut() {
+        
+        do{
+            try auth.signOut()
+        } catch {
+            print("Erro ao realizar logout: \(error.localizedDescription)")
+        }
+    }
+    
     
 }
