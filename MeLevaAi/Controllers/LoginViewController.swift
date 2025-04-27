@@ -59,6 +59,17 @@ class LoginViewController: UIViewController {
         contentView.setConstraintsToParent(self.view)
 
     }
+    
+    private func showPassword(){
+        
+        let showPasswordSwitch = contentView.showPasswordSwitch
+        let passwordTextField = contentView.passwordTextField
+        
+        if showPasswordSwitch.isOn == true {
+            passwordTextField.isSecureTextEntry = false
+        }
+        
+    }
 
     
     @objc private func showSignUpView(){

@@ -92,6 +92,29 @@ class LoginView: UIView {
         return textField
     }()
     
+    lazy var showPasswordSwitch: UISwitch = {
+        let showPassSwitch = UISwitch()
+        showPassSwitch.translatesAutoresizingMaskIntoConstraints = false
+        return showPassSwitch
+    }()
+    
+    lazy var showPasswordLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Vizualizar senha!"
+        label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        return label
+    }()
+    
+    lazy var showPasswordStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.spacing = 12
+        stackView.alignment = .center
+        return stackView
+    }()
+    
     lazy var loginButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -140,6 +163,7 @@ class LoginView: UIView {
         
         mainStackView.addArrangedSubview(emailStackView)
         mainStackView.addArrangedSubview(passwordStackView)
+        mainStackView.addArrangedSubview(showPasswordStackView)
         mainStackView.addArrangedSubview(loginButton)
         mainStackView.addArrangedSubview(signUpButton)
         
@@ -148,6 +172,9 @@ class LoginView: UIView {
         
         passwordStackView.addArrangedSubview(passwordLabel)
         passwordStackView.addArrangedSubview(passwordTextField)
+        
+        showPasswordStackView.addArrangedSubview(showPasswordSwitch)
+        showPasswordStackView.addArrangedSubview(showPasswordLabel)
         
         
     }

@@ -223,6 +223,29 @@ class signUpView: UIView {
         return label
     }()
     
+    lazy var showPasswordSwitch: UISwitch = {
+        let showPassSwitch = UISwitch()
+        showPassSwitch.translatesAutoresizingMaskIntoConstraints = false
+        return showPassSwitch
+    }()
+    
+    lazy var showPasswordLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Vizualizar senha!"
+        label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        return label
+    }()
+    
+    lazy var showPasswordStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.spacing = 12
+        stackView.alignment = .center
+        return stackView
+    }()
+    
     lazy var signUpButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -232,8 +255,6 @@ class signUpView: UIView {
         button.layer.cornerRadius = 12
         return button
     }()
-    
-    private lazy var showPassword = " "
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -262,6 +283,7 @@ class signUpView: UIView {
         mainStackView.addArrangedSubview(emailStackView)
         mainStackView.addArrangedSubview(passwordStackView)
         mainStackView.addArrangedSubview(confirmPasswordStackView)
+        mainStackView.addArrangedSubview(showPasswordStackView)
         mainStackView.addArrangedSubview(driveSwitchStackView)
         mainStackView.addArrangedSubview(signUpButton)
         
@@ -279,6 +301,9 @@ class signUpView: UIView {
         
         confirmPasswordStackView.addArrangedSubview(confirmPasswordLabel)
         confirmPasswordStackView.addArrangedSubview(confirmPasswordTextField)
+        
+        showPasswordStackView.addArrangedSubview(showPasswordSwitch)
+        showPasswordStackView.addArrangedSubview(showPasswordLabel)
         
         driveSwitchStackView.addArrangedSubview(passLabel)
         driveSwitchStackView.addArrangedSubview(driveSwitch)
