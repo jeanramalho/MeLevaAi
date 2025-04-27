@@ -24,9 +24,11 @@ class PessengerViewController: UIViewController {
     
     private func setHierarchy(){
         
+        view.addSubview(contentView)
     }
     
     private func setConstraints(){
-        
+        contentView.translatesAutoresizingMaskIntoConstraints = false
+        contentView.setConstraintsToParent(self.view)
     }
 }

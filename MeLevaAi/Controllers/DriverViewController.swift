@@ -9,7 +9,7 @@ import UIKit
 
 class DriverViewController: UIViewController {
     
-    private let contenView: DriverViewController = DriverViewController()
+    private let contenView: DriverView = DriverView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,10 +23,12 @@ class DriverViewController: UIViewController {
     }
     
     private func setHierarchy(){
-        
+        view.addSubview(contenView)
     }
     
     private func setConstraints(){
-        
+      
+        contenView.translatesAutoresizingMaskIntoConstraints = false
+        contenView.setConstraintsToParent(self.view)
     }
 }

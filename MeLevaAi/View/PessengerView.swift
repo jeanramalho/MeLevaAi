@@ -20,6 +20,7 @@ class PessengerView: UIView {
     
     private func setupUI(){
         
+        backgroundColor = .blue
         setHierarchy()
         setConstraints()
     }

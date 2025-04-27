@@ -69,13 +69,13 @@ class Authentication {
         }
     }
     
-    public func checkAuth(completion: @escaping (Bool) -> Void){
+    public func checkAuth(completion: @escaping (Bool, String?) -> Void){
         self.auth.addStateDidChangeListener { auth, user in
             if let loggedUser = user {
-                completion(true)
+                completion(true, loggedUser.uid)
                 return
             } else {
-                completion(false)
+                completion(false, nil)
                 return
             }
         }
@@ -87,6 +87,20 @@ class Authentication {
             try auth.signOut()
         } catch {
             print("Erro ao realizar logout: \(error.localizedDescription)")
+        }
+    }
+    
+    public func getUserDriverStatus(userId: String, completion: @escaping (Bool?) -> Void){
+        
+        let usuarios = database.child("usuarios")
+        let driverStatus = usuarios.child(userId).child("motorista")
+        
+        driverStatus.observeSingleEvent(of: .value) { snapShot in
+            if let isDriver = snapShot.value as? Bool {
+                completion(isDriver)
+            } else {
+                completion(nil)
+            }
         }
     }
     

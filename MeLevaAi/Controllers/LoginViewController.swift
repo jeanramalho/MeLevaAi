@@ -33,9 +33,24 @@ class LoginViewController: UIViewController {
     }
     
     private func isUserLogged(){
-        authService.checkAuth { isUserLogged in
+        
+        authService.checkAuth { isUserLogged, userId in
+            
+            guard let userUid = userId else {return}
+            
+            let driverViewController = DriverViewController()
+            let pessengerViewController = PessengerViewController()
+            
             if isUserLogged == true {
-                print("Usuário logado!")
+                
+                self.authService.getUserDriverStatus(userId: userUid) { isDriver in
+                    if isDriver == true {
+                        self.navigationController?.setViewControllers([driverViewController], animated: true)
+                    } else {
+                        self.navigationController?.setViewControllers([pessengerViewController], animated: true)
+                    }
+                }
+                
             } else {
                 print("Usuário não logado")
             }
