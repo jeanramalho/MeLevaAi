@@ -24,11 +24,22 @@ class LoginViewController: UIViewController {
     
     private func setup(){
         
+        isUserLogged()
         hideNavigationBar()
         hideKeyboard(self, contentView: self.contentView)
         setupContentView()
         setHierarchy()
         setConstraints()
+    }
+    
+    private func isUserLogged(){
+        authService.checkAuth { isUserLogged in
+            if isUserLogged == true {
+                print("Usuário logado!")
+            } else {
+                print("Usuário não logado")
+            }
+        }
     }
     
     private func setupContentView(){
