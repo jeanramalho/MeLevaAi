@@ -90,6 +90,23 @@ class SingUpViewController: UIViewController {
             
             authService.createUser(email: email, password: password, userName: fullName, driver: driver) { success in
                 if success {
+                    self.authService.checkAuth { isUserLog, userId in
+                        
+                        guard let userUid = userId else {return}
+                        
+                        let driverViewController = DriverViewController()
+                        let pessengerViewController = PessengerViewController()
+                        
+                        if isUserLog == true {
+                            self.authService.getUserDriverStatus(userId: userUid) { isDriver in
+                                if isDriver == true {
+                                    self.navigationController?.setViewControllers([driverViewController], animated: true)
+                                } else {
+                                    self.navigationController?.setViewControllers([pessengerViewController], animated: true)
+                                }
+                            }
+                        }
+                    }
                     print("Usuário criado!")
                 } else {
                     let alert = CustomAlert(title: "Erro ao criar usuário!", message: "Ocorreu um erro ao criar seu usuário. Por favor tente novamente!")
