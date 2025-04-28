@@ -76,6 +76,12 @@ class SingUpViewController: UIViewController {
         
         if name == "" || lastName == "" || email == "" || password == "" || confirmPassword == "" {
             
+            if password.count < 6 || confirmPassword.count < 6 {
+                let alert = CustomAlert(title: "Caracteres insuficientes!", message: "Sua senha deve ter 6 ou mais caracteres. Tente novamente!")
+                
+                self.present(alert.alert(), animated: true)
+            }
+            
             let alert = CustomAlert(title: "Preencha todos os campos", message: "Para continuar seu cadastro preencha todos os campos solicitados!")
             self.present(alert.alert(), animated: true, completion: nil)
         }
