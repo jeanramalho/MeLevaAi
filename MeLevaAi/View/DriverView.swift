@@ -20,7 +20,7 @@ class DriverView: UIView {
     
     private func setupUI(){
         
-        backgroundColor = .green
+        backgroundColor = .white
         setHierarchy()
         setConstraints()
     }

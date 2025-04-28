@@ -20,7 +20,7 @@ class PessengerViewController: UIViewController {
     
     private func setup(){
         
-        self.title = "Me Leva Aí - Passageiro"
+        self.title = "MeLevaAí - Passageiro"
         
         setupContentView()
         setupNavigationBar()
