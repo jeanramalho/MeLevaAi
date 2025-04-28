@@ -81,12 +81,14 @@ class Authentication {
         }
     }
     
-    public func logOut() {
+    public func logOut(completion: @escaping (Bool) -> Void) {
         
         do{
             try auth.signOut()
+            completion(false)
         } catch {
             print("Erro ao realizar logout: \(error.localizedDescription)")
+            completion(true)
         }
     }
     

@@ -10,6 +10,8 @@ import UIKit
 class PessengerViewController: UIViewController {
     
     private let contentView: PessengerView = PessengerView()
+    private let authService = Authentication()
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,8 +20,22 @@ class PessengerViewController: UIViewController {
     
     private func setup(){
         
+        self.title = "Me Leva Aí - Passageiro"
+        
+        setupContentView()
+        setupNavigationBar()
         setHierarchy()
         setConstraints()
+    }
+    
+    private func setupContentView(){
+        
+        let logOutButton = UIBarButtonItem(title: "< Sair",
+                                           style: .plain,
+                                           target: self,
+                                           action: #selector(logOutAccount))
+        
+        self.navigationItem.leftBarButtonItem = logOutButton
     }
     
     private func setHierarchy(){
@@ -31,4 +47,17 @@ class PessengerViewController: UIViewController {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.setConstraintsToParent(self.view)
     }
+    
+    @objc private func logOutAccount(){
+        authService.logOut { auth in
+            
+            let loginViewController = LoginViewController()
+            
+            if auth == false {
+                self.navigationController?.setViewControllers([loginViewController], animated: true)
+            }
+        }
+    }
+    
+    
 }
