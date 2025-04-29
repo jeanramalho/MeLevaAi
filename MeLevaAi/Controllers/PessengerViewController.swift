@@ -6,11 +6,13 @@
 //
 import Foundation
 import UIKit
+import MapKit
 
 class PessengerViewController: UIViewController {
     
     private let contentView: PessengerView = PessengerView()
     private let authService = Authentication()
+    private let viewModel = LocationViewModel()
     
     
     override func viewDidLoad() {
@@ -22,6 +24,9 @@ class PessengerViewController: UIViewController {
         
         self.title = "MeLevaAí - Passageiro"
         
+        viewModel.setupViewModel()
+        
+        setupMap()
         setupContentView()
         setupNavigationBar()
         setHierarchy()
@@ -36,6 +41,21 @@ class PessengerViewController: UIViewController {
                                            action: #selector(logOutAccount))
         
         self.navigationItem.leftBarButtonItem = logOutButton
+    }
+    
+    private func setupMap(){
+        
+        let mapView = contentView.mapView
+        mapView.showsUserLocation = true
+        
+        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        
+        viewModel.onLocationUpdate = { [weak self] coordinate in
+                
+            let region = MKCoordinateRegion(center: coordinate, span: span)
+            mapView.setRegion(region, animated: true)
+        }
+        
     }
     
     private func setHierarchy(){
