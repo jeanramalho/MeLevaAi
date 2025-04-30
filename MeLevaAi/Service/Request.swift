@@ -9,4 +9,5 @@ import FirebaseDatabase
 
 class Request {
     
+    private let database = Database.database().reference()
 }
