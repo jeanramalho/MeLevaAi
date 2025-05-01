@@ -16,5 +16,7 @@ class Requests {
         let requests = self.database.child("requisicoes")
         
         let reqUserData: UserRequestModel = user
+        
+        requests.childByAutoId().setValue(reqUserData)
     }
 }
