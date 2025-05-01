@@ -19,11 +19,15 @@ class RequestsViewModel: NSObject {
     
     
     public func requestACar(){
+        
+        print("Tentando chamar um carro")
 
         auth.getReqUserData { user in
             
             guard let userLatitude = self.userLocation.latitude as? String else {return}
             guard let userLongitude = self.userLocation.longitude as? String else {return}
+            
+            print("latitude: \(userLatitude) e longitude: \(userLongitude)")
             
             let reqUserData: UserRequestModel = UserRequestModel(email: user.email,
                                                                  nome: user.nome,

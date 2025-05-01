@@ -119,6 +119,7 @@ class Authentication {
             let reqUserData = User(email: userEmail , nome: userName)
             
             completion(reqUserData)
+            print("Dados do usuário \(userEmail)")
         }
         
     }

@@ -84,6 +84,7 @@ class PessengerViewController: UIViewController {
     }
     
     @objc private func getACar(){
+        print("Chamando um carro")
         self.requestViewModel.requestACar()
     }
     
