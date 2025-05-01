@@ -7,7 +7,13 @@
 import Foundation
 import FirebaseDatabase
 
-class Request {
+class Requests {
     
     private let database = Database.database().reference()
+    
+    public func createRequest(){
+        
+        let requests = self.database.child("requisicoes")
+        
+    }
 }
