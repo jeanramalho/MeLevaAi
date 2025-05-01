@@ -11,9 +11,10 @@ class Requests {
     
     private let database = Database.database().reference()
     
-    public func createRequest(){
+    public func createRequest(user: UserRequestModel){
         
         let requests = self.database.child("requisicoes")
         
+        let reqUserData: UserRequestModel = user
     }
 }
