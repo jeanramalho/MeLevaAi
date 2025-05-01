@@ -13,6 +13,7 @@ class PessengerViewController: UIViewController {
     private let contentView: PessengerView = PessengerView()
     private let authService = Authentication()
     private let viewModel = LocationViewModel()
+    private let requestViewModel = RequestsViewModel()
     
     
     override func viewDidLoad() {
@@ -41,6 +42,9 @@ class PessengerViewController: UIViewController {
                                            action: #selector(logOutAccount))
         
         self.navigationItem.leftBarButtonItem = logOutButton
+        
+        let callCarButton = contentView.callCarButton
+        callCarButton.addTarget(self, action: #selector(getACar), for: .touchUpInside)
     }
     
     private func setupMap(){
@@ -79,5 +83,8 @@ class PessengerViewController: UIViewController {
         }
     }
     
+    @objc private func getACar(){
+        self.requestViewModel.requestACar()
+    }
     
 }

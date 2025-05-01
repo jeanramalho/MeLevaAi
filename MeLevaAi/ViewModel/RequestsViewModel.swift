@@ -9,6 +9,7 @@ import UIKit
 import MapKit
 import CoreLocation
 
+
 class RequestsViewModel: NSObject {
     
     private let requestService = Requests()
@@ -18,6 +19,7 @@ class RequestsViewModel: NSObject {
     
     
     public func requestACar(){
+
         auth.getReqUserData { user in
             
             guard let userLatitude = self.userLocation.latitude as? String else {return}
@@ -27,6 +29,8 @@ class RequestsViewModel: NSObject {
                                                                  nome: user.nome,
                                                                  latitude: userLatitude,
                                                                  longitude: userLongitude)
+            
+            self.requestService.createRequest(user: reqUserData)
         }
     }
 }
