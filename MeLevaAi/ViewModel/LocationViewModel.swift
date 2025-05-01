@@ -12,6 +12,8 @@ import MapKit
 class LocationViewModel: NSObject  {
     
     private var locationManager = CLLocationManager()
+    private var userLocation = CLLocationCoordinate2D()
+    private var requestViewModel = RequestsViewModel()
     
     // Closure que vai ser chamada quando a localização for atualizada
     var onLocationUpdate: ((CLLocationCoordinate2D) -> Void)?
@@ -27,6 +29,8 @@ class LocationViewModel: NSObject  {
         locationManager.requestWhenInUseAuthorization()
         locationManager.startUpdatingLocation()
     }
+    
+   
 }
 
 extension LocationViewModel: CLLocationManagerDelegate {
@@ -35,6 +39,7 @@ extension LocationViewModel: CLLocationManagerDelegate {
         
         
         if let coordinates = locations.last?.coordinate {
+            self.requestViewModel.userLocation = coordinates
             onLocationUpdate?(coordinates)
         }
         
