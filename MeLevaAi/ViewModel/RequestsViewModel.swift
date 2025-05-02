@@ -37,7 +37,13 @@ class RequestsViewModel: NSObject {
                                                                  latitude: userLatitude,
                                                                  longitude: userLongitude)
             
-            self.requestService.createRequest(user: reqUserData)
+            self.requestService.createRequest(user: reqUserData) { success in
+                if success {
+                    print("Requisição criada com sucesso")
+                } else {
+                    print("Erro ao criar requisição")
+                }
+            }
         }
     }
 }
