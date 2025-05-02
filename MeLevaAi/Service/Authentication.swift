@@ -109,17 +109,10 @@ class Authentication {
     public func getReqUserData(completion: @escaping (User) -> Void) {
         
         self.auth.addStateDidChangeListener { auth, user in
-            
-            guard let userId = user?.uid as? String else {return}
-            let users = self.database.child("usuarios")
-            let userData = users.child(userId)
-            guard let userEmail = userData.child("email") as? String else {return}
-            guard let userName = userData.child("nome") as? String else {return}
-            
-            let reqUserData = User(email: userEmail , nome: userName)
-            
-            completion(reqUserData)
-            print("Dados do usuário \(userEmail)")
+            guard let userId = user?.uid else {
+                completion(nil)
+                return
+            }
         }
         
     }
