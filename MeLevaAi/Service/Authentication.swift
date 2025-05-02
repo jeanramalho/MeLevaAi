@@ -106,12 +106,25 @@ class Authentication {
         }
     }
     
-    public func getReqUserData(completion: @escaping (User) -> Void) {
+    public func getReqUserData(completion: @escaping (User?) -> Void) {
         
         self.auth.addStateDidChangeListener { auth, user in
             guard let userId = user?.uid else {
                 completion(nil)
                 return
+            }
+            
+            let userData = self.database.child("usuarios").child(userId)
+            userData.observeSingleEvent(of: .value) { snapShot in
+                guard let data = snapShot.value as? [String: Any],
+                      let email = data["email"] as? String,
+                      let name = data["nome"] as? String else {
+                    completion(nil)
+                    return
+                }
+                
+                let reqUserData = User(email: email, nome: name)
+                completion(reqUserData)
             }
         }
         

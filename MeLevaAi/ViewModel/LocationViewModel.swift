@@ -11,6 +11,8 @@ import MapKit
 
 class LocationViewModel: NSObject  {
     
+    var currentLocation: CLLocationCoordinate2D?
+    
     private var locationManager = CLLocationManager()
     private var userLocation = CLLocationCoordinate2D()
     private var requestViewModel = RequestsViewModel()
@@ -40,7 +42,8 @@ extension LocationViewModel: CLLocationManagerDelegate {
         
         if let coordinates = locations.last?.coordinate {
             self.requestViewModel.userLocation = coordinates
-            onLocationUpdate?(coordinates)
+            self.currentLocation = coordinates
+            self.onLocationUpdate?(coordinates)
         }
         
         

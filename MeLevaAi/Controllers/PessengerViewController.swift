@@ -85,7 +85,14 @@ class PessengerViewController: UIViewController {
     
     @objc private func getACar(){
         print("Chamando um carro")
-        self.requestViewModel.requestACar()
+        
+        if let cordinate = viewModel.currentLocation {
+            self.requestViewModel.userLocation = cordinate
+            self.requestViewModel.requestACar()
+        } else {
+            print("Localização não disponível")
+        }
+        
     }
     
 }

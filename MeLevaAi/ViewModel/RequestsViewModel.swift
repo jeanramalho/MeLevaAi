@@ -24,13 +24,16 @@ class RequestsViewModel: NSObject {
 
         auth.getReqUserData { user in
             
-            guard let userLatitude = self.userLocation.latitude as? String else {return}
-            guard let userLongitude = self.userLocation.longitude as? String else {return}
+            let userLatitude = String(self.userLocation.latitude)
+            let userLongitude = String(self.userLocation.longitude)
             
             print("latitude: \(userLatitude) e longitude: \(userLongitude)")
             
-            let reqUserData: UserRequestModel = UserRequestModel(email: user.email,
-                                                                 nome: user.nome,
+            guard let userEmail = user?.email as String? else {return}
+            guard let userName = user?.nome as String? else {return}
+            
+            let reqUserData: UserRequestModel = UserRequestModel(email: userEmail,
+                                                                 nome: userName,
                                                                  latitude: userLatitude,
                                                                  longitude: userLongitude)
             
