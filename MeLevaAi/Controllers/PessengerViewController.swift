@@ -88,7 +88,17 @@ class PessengerViewController: UIViewController {
         
         if let cordinate = viewModel.currentLocation {
             self.requestViewModel.userLocation = cordinate
-            self.requestViewModel.requestACar()
+            
+            self.requestViewModel.requestACar { isCarCalled in
+                if isCarCalled {
+                    
+                    self.contentView.callCarButton.setTitle("Cancelar Carona", for: .normal)
+                    
+                } else {
+                    
+                }
+            }
+            
         } else {
             print("Localização não disponível")
         }
