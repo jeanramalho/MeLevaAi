@@ -14,6 +14,7 @@ class RequestsViewModel: NSObject {
     
     private let requestService = Requests()
     private let auth = Authentication()
+    private var isCarCalled: Bool = false
     
     public var userLocation = CLLocationCoordinate2D()
     
@@ -40,10 +41,12 @@ class RequestsViewModel: NSObject {
             self.requestService.createRequest(user: reqUserData) { success in
                 if success {
                     print("Requisição criada com sucesso")
-                    completion(true)
+                    self.isCarCalled = true
+                    completion(self.isCarCalled)
                 } else {
                     print("Erro ao criar requisição")
-                    completion(false)
+                    self.isCarCalled = false
+                    completion(self.isCarCalled)
                 }
             }
         }
