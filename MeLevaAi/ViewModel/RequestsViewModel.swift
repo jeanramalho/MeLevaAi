@@ -18,7 +18,7 @@ class RequestsViewModel: NSObject {
     public var userLocation = CLLocationCoordinate2D()
     
     
-    public func requestACar(){
+    public func requestACar(completion: @escaping(Bool) -> Void){
         
         print("Tentando chamar um carro")
 
@@ -40,8 +40,10 @@ class RequestsViewModel: NSObject {
             self.requestService.createRequest(user: reqUserData) { success in
                 if success {
                     print("Requisição criada com sucesso")
+                    completion(true)
                 } else {
                     print("Erro ao criar requisição")
+                    completion(false)
                 }
             }
         }
