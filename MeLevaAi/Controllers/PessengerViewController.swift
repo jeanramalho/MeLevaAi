@@ -72,6 +72,30 @@ class PessengerViewController: UIViewController {
         contentView.setConstraintsToParent(self.view)
     }
     
+    private func updateCarCallButton(){
+        
+        let callCarButton = contentView.callCarButton
+        callCarButton.removeTarget(nil, action: nil, for: .allEvents)
+        
+        if requestViewModel.isCarCalled {
+            
+            self.contentView.callCarButton.setTitle("Cancelar Carona", for: .normal)
+            self.contentView.callCarButton.backgroundColor = UIColor.red
+            self.contentView.callCarButton.setTitleColor(UIColor.white, for: .normal)
+            
+            self.contentView.callCarButton.addTarget(self, action: #selector(cancellACar), for: .touchUpInside)
+            
+        } else {
+            
+            self.contentView.callCarButton.setTitle("Solicitar Carro", for: .normal)
+            self.contentView.callCarButton.backgroundColor = Colors.darkSecondary
+            self.contentView.callCarButton.setTitleColor(Colors.defaultYellow, for: .normal)
+
+            self.contentView.callCarButton.addTarget(self, action: #selector(getACar), for: .touchUpInside)
+            
+        }
+    }
+    
     @objc private func logOutAccount(){
         authService.logOut { auth in
             
@@ -96,35 +120,21 @@ class PessengerViewController: UIViewController {
                 
             guard let self = self else {return}
                 
-            if isCarCalled {
-                
-                DispatchQueue.main.async {
-                    self.contentView.callCarButton.setTitle("Cancelar Carona", for: .normal)
-                    self.contentView.callCarButton.backgroundColor = UIColor.red
-                    self.contentView.callCarButton.setTitleColor(UIColor.white, for: .normal)
-                    
-                    self.contentView.callCarButton.removeTarget(nil, action: nil, for: .allEvents)
-                    self.contentView.callCarButton.addTarget(self, action: #selector(self.cancellACar), for: .touchUpInside)
-                }
-                    
+                if isCarCalled {
+                    self.updateCarCallButton()
                 }
             }
-            
-       
-        
     }
     
     @objc private func cancellACar(){
         
-        self.requestViewModel.isCarCalled = false
-        
-        DispatchQueue.main.async {
-            self.contentView.callCarButton.setTitle("Solicitar Carro", for: .normal)
-            self.contentView.callCarButton.backgroundColor = Colors.darkSecondary
-            self.contentView.callCarButton.setTitleColor(Colors.defaultYellow, for: .normal)
+        requestViewModel.cancellCarRequest { [weak self] success in
             
-            self.contentView.callCarButton.removeTarget(nil, action: nil, for: .allEvents)
-            self.contentView.callCarButton.addTarget(self, action: #selector(self.getACar), for: .touchUpInside)
+            guard let self = self else {return}
+                
+            if success {
+                    self.updateCarCallButton()
+                }
         }
     }
     

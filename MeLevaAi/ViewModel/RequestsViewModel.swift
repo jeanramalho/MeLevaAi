@@ -14,7 +14,7 @@ class RequestsViewModel: NSObject {
     
     private let requestService = Requests()
     private let auth = Authentication()
-    
+    private var currentRequestId: String?
     
     public var userLocation = CLLocationCoordinate2D()
     public var isCarCalled: Bool = false
@@ -26,23 +26,26 @@ class RequestsViewModel: NSObject {
 
         auth.getReqUserData { user in
             
+            guard let user = user else {
+                completion(false)
+                return
+            }
+            
             let userLatitude = String(self.userLocation.latitude)
             let userLongitude = String(self.userLocation.longitude)
             
             print("latitude: \(userLatitude) e longitude: \(userLongitude)")
             
-            guard let userEmail = user?.email as String? else {return}
-            guard let userName = user?.nome as String? else {return}
-            
-            let reqUserData: UserRequestModel = UserRequestModel(email: userEmail,
-                                                                 nome: userName,
+            let reqUserData: UserRequestModel = UserRequestModel(email: user.email,
+                                                                 nome: user.nome,
                                                                  latitude: userLatitude,
                                                                  longitude: userLongitude)
             
-            self.requestService.createRequest(user: reqUserData) { success in
-                if success {
+            self.requestService.createRequest(user: reqUserData) { success, requestId in
+                if success, let requestId = requestId {
                     print("Requisição criada com sucesso")
                     self.isCarCalled = true
+                    self.currentRequestId = requestId
                     completion(self.isCarCalled)
                 } else {
                     print("Erro ao criar requisição")
@@ -50,6 +53,23 @@ class RequestsViewModel: NSObject {
                     completion(self.isCarCalled)
                 }
             }
+        }
+    }
+    
+    public func cancellCarRequest(completion: @escaping (Bool) -> Void){
+        
+        guard let requestId = currentRequestId else {
+            print("Não há nenhuma request ativa para cancelar!")
+            completion(false)
+            return
+        }
+        
+        requestService.deleteRequest(with: requestId) { success in
+            if success {
+                self.isCarCalled = false
+                self.currentRequestId = nil
+            }
+            completion(success)
         }
     }
 }
