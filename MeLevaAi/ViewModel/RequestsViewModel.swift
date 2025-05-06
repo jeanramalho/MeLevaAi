@@ -14,9 +14,10 @@ class RequestsViewModel: NSObject {
     
     private let requestService = Requests()
     private let auth = Authentication()
-    private var isCarCalled: Bool = false
+    
     
     public var userLocation = CLLocationCoordinate2D()
+    public var isCarCalled: Bool = false
     
     
     public func requestACar(completion: @escaping(Bool) -> Void){

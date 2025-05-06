@@ -86,27 +86,46 @@ class PessengerViewController: UIViewController {
     @objc private func getACar(){
         print("Chamando um carro")
         
-        if let cordinate = viewModel.currentLocation {
+        guard let cordinate = viewModel.currentLocation else {
+            print("Localização não disponível!")
+            return
+        }
             self.requestViewModel.userLocation = cordinate
             
-            self.requestViewModel.requestACar { isCarCalled in
-                if isCarCalled {
-                    
+            self.requestViewModel.requestACar { [weak self] isCarCalled in
+                
+            guard let self = self else {return}
+                
+            if isCarCalled {
+                
+                DispatchQueue.main.async {
                     self.contentView.callCarButton.setTitle("Cancelar Carona", for: .normal)
+                    self.contentView.callCarButton.backgroundColor = UIColor.red
+                    self.contentView.callCarButton.setTitleColor(UIColor.white, for: .normal)
                     
-                } else {
+                    self.contentView.callCarButton.removeTarget(nil, action: nil, for: .allEvents)
+                    self.contentView.callCarButton.addTarget(self, action: #selector(self.cancellACar), for: .touchUpInside)
+                }
                     
                 }
             }
             
-        } else {
-            print("Localização não disponível")
-        }
+       
         
     }
     
     @objc private func cancellACar(){
         
+        self.requestViewModel.isCarCalled = false
+        
+        DispatchQueue.main.async {
+            self.contentView.callCarButton.setTitle("Solicitar Carro", for: .normal)
+            self.contentView.callCarButton.backgroundColor = Colors.darkSecondary
+            self.contentView.callCarButton.setTitleColor(Colors.defaultYellow, for: .normal)
+            
+            self.contentView.callCarButton.removeTarget(nil, action: nil, for: .allEvents)
+            self.contentView.callCarButton.addTarget(self, action: #selector(self.getACar), for: .touchUpInside)
+        }
     }
     
 }
