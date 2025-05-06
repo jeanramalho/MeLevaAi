@@ -36,7 +36,19 @@ class Requests {
         }
     }
     
-    public func deleteRequest(){
+    public func deleteRequest(with requestId: String, completion: @escaping (Bool) -> Void) {
         
+        let requestRef = database.child("requisicoes").child(requestId)
+        
+        requestRef.removeValue { error, _ in
+            
+            if let error = error {
+                print("Erro ao cancelar a requisicao: \(error.localizedDescription)")
+                completion(false)
+            } else {
+                print("Requisição cancelada com sucesso!")
+                completion(true)
+            }
+        }
     }
 }
