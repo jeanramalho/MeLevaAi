@@ -11,7 +11,7 @@ class Requests {
     
     private let database = Database.database().reference()
     
-    public func createRequest(user: UserRequestModel, completion: @escaping (Bool) -> Void){
+    public func createRequest(user: UserRequestModel, completion: @escaping (Bool, String?) -> Void){
         
         let requests = self.database.child("requisicoes")
         let data: [String: Any] = [
