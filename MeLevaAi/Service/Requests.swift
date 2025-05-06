@@ -14,6 +14,8 @@ class Requests {
     public func createRequest(user: UserRequestModel, completion: @escaping (Bool, String?) -> Void){
         
         let requests = self.database.child("requisicoes")
+        let requestId = requests.childByAutoId().key ?? UUID().uuidString
+        
         let data: [String: Any] = [
             "email": user.email,
             "nome": user.nome,
@@ -21,16 +23,20 @@ class Requests {
             "longitude": user.longitude
         ]
         
-        requests.childByAutoId().setValue(data) { error, _ in
+        requests.child(requestId).setValue(data) { error, _ in
             
             if let error = error {
                 print("Erro ao criar requisição: \(error.localizedDescription)")
-                completion(false)
+                completion(false, nil)
             } else {
                 print("Requisição criada com sucesso!")
-                completion(true)
+                completion(true, requestId)
             }
             
         }
+    }
+    
+    public func deleteRequest(){
+        
     }
 }
