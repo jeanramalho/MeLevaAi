@@ -19,7 +19,7 @@ class PessengerView: UIView {
     lazy var callCarButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Solicitar Carro", for: .normal)
+        button.setTitle("Pedir Carona", for: .normal)
         button.backgroundColor = Colors.darkSecondary
         button.setTitleColor(Colors.defaultYellow, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 24, weight: .bold)
