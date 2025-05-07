@@ -87,7 +87,7 @@ class PessengerViewController: UIViewController {
             
         } else {
             
-            self.contentView.callCarButton.setTitle("Solicitar Carro", for: .normal)
+            self.contentView.callCarButton.setTitle("Pedir Carona", for: .normal)
             self.contentView.callCarButton.backgroundColor = Colors.darkSecondary
             self.contentView.callCarButton.setTitleColor(Colors.defaultYellow, for: .normal)
 
