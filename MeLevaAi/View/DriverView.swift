@@ -9,6 +9,12 @@ import UIKit
 
 class DriverView: UIView {
     
+    lazy var reqTableView: UITableView = {
+        let tableView = UITableView()
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        return tableView
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()

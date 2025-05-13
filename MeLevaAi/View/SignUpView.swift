@@ -7,7 +7,7 @@
 import Foundation
 import UIKit
 
-class signUpView: UIView {
+class SignUpView: UIView {
     
     private lazy var mainScrollView: UIScrollView = {
         let scrollView = UIScrollView()

@@ -10,7 +10,7 @@ import UIKit
 class SingUpViewController: UIViewController {
     
 
-    private let contentView: signUpView = signUpView()
+    private let contentView: SignUpView = SignUpView()
     private let authService = Authentication()
     
     override func viewDidLoad() {
