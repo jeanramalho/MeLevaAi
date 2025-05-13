@@ -34,6 +34,10 @@ class DriverViewController: UIViewController {
                                            action: #selector(logOutAccount))
         
         self.navigationItem.leftBarButtonItem = logOutButton
+        
+        let requestsTableView = contenView.requestsTableView
+        requestsTableView.dataSource = self
+        requestsTableView.delegate = self
     }
     
     private func setHierarchy(){
@@ -56,4 +60,17 @@ class DriverViewController: UIViewController {
             }
         }
     }
+}
+
+extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 20
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        return UITableViewCell()
+    }
+    
+    
 }

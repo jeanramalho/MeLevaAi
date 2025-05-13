@@ -9,7 +9,7 @@ import UIKit
 
 class DriverView: UIView {
     
-    lazy var reqTableView: UITableView = {
+    lazy var requestsTableView: UITableView = {
         let tableView = UITableView()
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
@@ -32,10 +32,10 @@ class DriverView: UIView {
     }
     
     private func setHierarchy(){
-        
+        addSubview(requestsTableView)
     }
     
     private func setConstraints(){
-        
+        requestsTableView.setConstraintsToParent(self)
     }
 }
