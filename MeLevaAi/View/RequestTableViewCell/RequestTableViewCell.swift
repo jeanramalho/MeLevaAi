@@ -9,6 +9,7 @@ import UIKit
 
 class RequestTableViewCell: UITableViewCell {
     
+    
     static let identifier: String = "RequestTableViewCell"
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {

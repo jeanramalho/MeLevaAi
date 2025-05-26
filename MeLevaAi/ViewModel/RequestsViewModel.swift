@@ -72,6 +72,10 @@ class RequestsViewModel: NSObject {
             completion(success)
         }
     }
+    
+    public func getRequests(completion: @escaping ){
+        
+    }
 }
 
 extension RequestsViewModel: CLLocationManagerDelegate {
