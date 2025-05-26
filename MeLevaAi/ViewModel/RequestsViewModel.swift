@@ -8,6 +8,7 @@ import Foundation
 import UIKit
 import MapKit
 import CoreLocation
+import FirebaseDatabase
 
 
 class RequestsViewModel: NSObject {
@@ -15,6 +16,7 @@ class RequestsViewModel: NSObject {
     private let requestService = Requests()
     private let auth = Authentication()
     private var currentRequestId: String?
+    private var requestsList: [DataSnapshot] = []
     
     public var userLocation = CLLocationCoordinate2D()
     public var isCarCalled: Bool = false
@@ -73,7 +75,16 @@ class RequestsViewModel: NSObject {
         }
     }
     
-    public func getRequests(completion: @escaping ){
+    public func getRequests(completion: @escaping ([DataSnapshot]) -> Void){
+        
+        let database = Database.database().reference()
+        let requests = database.child("requisicoes")
+        
+        requests.observe(.childAdded) { snapShot in
+            
+            self.requestsList.append(snapShot)
+            completion(self.requestsList)
+        }
         
     }
 }

@@ -38,6 +38,7 @@ class DriverViewController: UIViewController {
         let requestsTableView = contenView.requestsTableView
         requestsTableView.dataSource = self
         requestsTableView.delegate = self
+        requestsTableView.register(RequestTableViewCell.self, forCellReuseIdentifier: RequestTableViewCell.identifier)
     }
     
     private func setHierarchy(){
