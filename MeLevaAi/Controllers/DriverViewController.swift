@@ -43,6 +43,9 @@ class DriverViewController: UIViewController {
         requestsTableView.delegate = self
         requestsTableView.register(RequestTableViewCell.self, forCellReuseIdentifier: RequestTableViewCell.identifier)
         
+        viewModel.getRequests { requests in
+            self.requests = requests
+        }
     }
     
     private func setHierarchy(){
@@ -70,13 +73,13 @@ class DriverViewController: UIViewController {
 extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 20
+        return requests.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: RequestTableViewCell.identifier, for: indexPath) as? RequestTableViewCell else {return UITableViewCell()}
-        
+        cell.textLabel?.text = self.requests[ indexPath.row ]
         
         return cell
     }

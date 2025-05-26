@@ -16,7 +16,7 @@ class RequestsViewModel: NSObject {
     private let requestService = Requests()
     private let auth = Authentication()
     private var currentRequestId: String?
-    private var requestsList: [DataSnapshot] = []
+    private var requestsList: [UserRequestModel] = []
     
     public var userLocation = CLLocationCoordinate2D()
     public var isCarCalled: Bool = false
@@ -75,17 +75,38 @@ class RequestsViewModel: NSObject {
         }
     }
     
-    public func getRequests(completion: @escaping ([DataSnapshot]) -> Void){
+    public func getRequests(completion: @escaping ([UserRequestModel]) -> Void){
         
         let database = Database.database().reference()
-        let requests = database.child("requisicoes")
+        let requestsRef = database.child("requisicoes")
         
-        requests.observe(.childAdded) { snapShot in
+        requestsRef.observe(.childAdded) { snapShot in
             
-            self.requestsList.append(snapShot)
+            guard let value = snapShot.value as? [String: Any],
+                  let nome = value["nome"] as? String,
+                  let email = value["email"] as? String,
+                  let latitude = value["latitude"] as? String,
+                  let longitude = value["longitude"] as? String else {
+                print("Erro ao converter snapshot")
+                return
+            }
+            
+            let request = UserRequestModel(email: email,
+                                           nome: nome,
+                                           latitude: latitude,
+                                           longitude: longitude)
+            
+            self.requestsList.append(request)
             completion(self.requestsList)
         }
-        
+    }
+    
+    public func getARequest(at index: Int) -> UserRequestModel {
+        return requestsList[index]
+    }
+    
+    public func requestsCount() -> Int {
+        return requestsList.count
     }
 }
 
