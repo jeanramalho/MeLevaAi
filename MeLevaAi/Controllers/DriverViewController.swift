@@ -11,6 +11,9 @@ class DriverViewController: UIViewController {
     
     private let contenView: DriverView = DriverView()
     private let authService = Authentication()
+    private let viewModel = RequestsViewModel()
+    
+    private var requests: [UserRequestModel] = []
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,6 +42,7 @@ class DriverViewController: UIViewController {
         requestsTableView.dataSource = self
         requestsTableView.delegate = self
         requestsTableView.register(RequestTableViewCell.self, forCellReuseIdentifier: RequestTableViewCell.identifier)
+        
     }
     
     private func setHierarchy(){
