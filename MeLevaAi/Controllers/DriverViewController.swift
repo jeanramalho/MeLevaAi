@@ -24,6 +24,7 @@ class DriverViewController: UIViewController {
         
         self.title = "MeLevaAí - Motorista"
         
+        fetchRequests()
         setupNavigationBar()
         setupContentView()
         setHierarchy()
@@ -42,10 +43,14 @@ class DriverViewController: UIViewController {
         requestsTableView.dataSource = self
         requestsTableView.delegate = self
         requestsTableView.register(RequestTableViewCell.self, forCellReuseIdentifier: RequestTableViewCell.identifier)
-        
-        viewModel.getRequests { requests in
-            self.requests = requests
-        }
+    }
+    
+    private func fetchRequests(){
+        self.viewModel.getRequests(completion: { [weak self] _ in
+            DispatchQueue.main.async {
+                self?.contenView.requestsTableView.reloadData()
+            }
+        })
     }
     
     private func setHierarchy(){
@@ -53,7 +58,7 @@ class DriverViewController: UIViewController {
     }
     
     private func setConstraints(){
-      
+        
         contenView.translatesAutoresizingMaskIntoConstraints = false
         contenView.setConstraintsToParent(self.view)
     }
@@ -73,13 +78,14 @@ class DriverViewController: UIViewController {
 extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return requests.count
+        return viewModel.requestsCount()
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: RequestTableViewCell.identifier, for: indexPath) as? RequestTableViewCell else {return UITableViewCell()}
-        cell.textLabel?.text = self.requests[ indexPath.row ]
+        let request = self.viewModel.getARequest(at: indexPath.row)
+        cell.textLabel?.text = request.nome
         
         return cell
     }
