@@ -94,8 +94,10 @@ extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: RequestTableViewCell.identifier, for: indexPath) as? RequestTableViewCell else {return UITableViewCell()}
+        
         let request = self.viewModel.getARequest(at: indexPath.row)
-        cell.textLabel?.text = request.nome
+        
+        cell.configure(with: request, driverLocation: driverLocation)
         
         return cell
     }
