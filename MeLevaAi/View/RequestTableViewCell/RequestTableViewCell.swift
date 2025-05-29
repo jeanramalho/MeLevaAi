@@ -75,7 +75,8 @@ class RequestTableViewCell: UITableViewCell {
         let distanceMeters = driverLoc.distance(from: passengerLoc)
         let distanceKm = distanceMeters / 1000
         
-        distanceLabel.text = "\(distanceKm)Km de distância"
+        
+        distanceLabel.text = String(format: "%.2f Km de distância", distanceKm)
     }
     
 }
