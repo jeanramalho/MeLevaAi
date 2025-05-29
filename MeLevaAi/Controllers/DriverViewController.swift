@@ -13,8 +13,10 @@ class DriverViewController: UIViewController {
     private let contenView: DriverView = DriverView()
     private let authService = Authentication()
     private let viewModel = RequestsViewModel()
+    private let locationManager = CLLocationManager()
     
     private var requests: [UserRequestModel] = []
+    private var driverLocation: CLLocationCoordinate2D?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,11 +27,18 @@ class DriverViewController: UIViewController {
         
         self.title = "MeLevaAí - Motorista"
         
+        setupDriverLocationManager()
         fetchRequests()
         setupNavigationBar()
         setupContentView()
         setHierarchy()
         setConstraints()
+    }
+    
+    private func setupDriverLocationManager(){
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.startUpdatingLocation()
     }
     
     private func setupContentView(){
@@ -92,4 +101,14 @@ extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     
+}
+
+extension DriverViewController: CLLocationManagerDelegate {
+    
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let loc = locations.last else {return}
+        self.driverLocation = loc.coordinate
+        
+        contenView.requestsTableView.reloadData()
+    }
 }
