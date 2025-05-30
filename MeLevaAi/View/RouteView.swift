@@ -52,7 +52,10 @@ class RouteView: UIView {
         routeMapView.setConstraintsToParent(self)
         
         NSLayoutConstraint.activate([
-            
+            confirmRequestButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18),
+            confirmRequestButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18),
+            confirmRequestButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30),
+            confirmRequestButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
 }
