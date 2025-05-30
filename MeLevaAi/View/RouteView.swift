@@ -20,6 +20,10 @@ class RouteView: UIView {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Confirmar Carona", for: .normal)
+        button.backgroundColor = Colors.darkSecondary
+        button.setTitleColor(Colors.defaultYellow, for: .normal)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        button.layer.cornerRadius = 12
         return button
     }()
     
@@ -44,6 +48,9 @@ class RouteView: UIView {
     }
     
     private func setConstraints(){
+        
+        routeMapView.setConstraintsToParent(self)
+        
         NSLayoutConstraint.activate([
             
         ])
