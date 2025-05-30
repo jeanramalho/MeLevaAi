@@ -102,6 +102,13 @@ extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
         return cell
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        DispatchQueue.main.async {
+            let routeView: RouteViewController = RouteViewController()
+            self.navigationController?.pushViewController(routeView, animated: true)
+        }
+    }
+    
     
 }
 
