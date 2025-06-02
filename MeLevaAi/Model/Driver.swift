@@ -13,5 +13,11 @@ struct Driver {
     let latitude: String
     let longitude: String
     
-    var coordinate:
+    var coordinate: CLLocationCoordinate2D? {
+        
+        guard let lat = Double(latitude),
+                let lon = Double(longitude)
+        else {return nil}
+        return CLLocationCoordinate2D(latitude: lat, longitude: lon)
+    }
 }
