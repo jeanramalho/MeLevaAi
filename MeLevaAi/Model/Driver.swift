@@ -33,5 +33,17 @@ struct Driver {
     }
     
     // Inicializa a partir de um dicionario vindo do firebase
-    
+    init?(dictionary: [String: Any]) {
+        guard
+            let email = dictionary["email"] as? String,
+            let nome = dictionary["nome"] as? String,
+            let latitude = dictionary["latitude"] as? String,
+            let longitude = dictionary["longitude"] as? String
+        else {return nil}
+        
+        self.email = email
+        self.nome = nome
+        self.latitude = latitude
+        self.longitude = longitude
+    }
 }
