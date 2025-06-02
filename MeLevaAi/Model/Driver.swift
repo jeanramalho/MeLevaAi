@@ -46,4 +46,12 @@ struct Driver {
         self.latitude = latitude
         self.longitude = longitude
     }
+    
+    // Construtor manual
+    init(email: String, nome: String, coordinate: CLLocationCoordinate2D) {
+        self.email = email
+        self.nome = nome
+        self.latitude = "\(coordinate.latitude)"
+        self.longitude = "\(coordinate.longitude)"
+    }
 }
