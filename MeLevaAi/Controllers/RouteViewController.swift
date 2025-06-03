@@ -10,6 +10,10 @@ import UIKit
 class RouteViewController: UIViewController {
     
     private let contentView: RouteView = RouteView()
+    private let driver: Driver
+    private let pessenger: UserRequestModel
+    
+    private let locationManeger = CLLocationManager()
     
     override func viewDidLoad() {
         super.viewDidLoad()
