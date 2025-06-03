@@ -36,6 +36,7 @@ class RouteViewController: UIViewController {
     
     private func setup(){
         
+        setupLocationManager()
         setupContentView()
         setHierarchy()
         setConstraints()
@@ -53,4 +54,15 @@ class RouteViewController: UIViewController {
         contentView.translatesAutoresizingMaskIntoConstraints = false
         contentView.setConstraintsToParent(self.view)
     }
+    
+    private func setupLocationManager(){
+        locationManeger.delegate = self
+        locationManeger.requestWhenInUseAuthorization()
+        // atualização de alta precisão para seguir a rota
+        locationManeger.desiredAccuracy = kCLLocationAccuracyBest
+        locationManeger.startUpdatingLocation()
+    }
+    
+    // Desenha rota inicial(estática) entre as coordenadas no motorista e do passageiro
+    
 }
