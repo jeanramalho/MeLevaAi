@@ -6,6 +6,7 @@
 //
 import Foundation
 import UIKit
+import CoreLocation
 
 class RouteViewController: UIViewController {
     
@@ -14,6 +15,19 @@ class RouteViewController: UIViewController {
     private let pessenger: UserRequestModel
     
     private let locationManeger = CLLocationManager()
+    
+    private let requestId: String
+    
+    init(driver: Driver, pessenger: UserRequestModel, requestId: String) {
+        self.driver = driver
+        self.pessenger = pessenger
+        self.requestId = requestId
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
