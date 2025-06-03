@@ -37,6 +37,7 @@ class RouteViewController: UIViewController {
     
     private func setup(){
         
+        drawRouteBetweenDriverAndPassenger()
         setupLocationManager()
         setupContentView()
         setHierarchy()
@@ -88,6 +89,11 @@ class RouteViewController: UIViewController {
                 print("Erro ao calcular rota: \(error?.localizedDescription ?? "sem detalhes").")
                                 return
             }
+            
+        // Exibe a rota no mapa
+            self.contentView.routeMapView.addOverlay(route.polyline)
+        // Ajusta zoom para mostrar toda a rota
+            self.contentView.routeMapView.setVisibleMapRect(route.polyline.boundingMapRect, edgePadding: UIEdgeInsets(top: 50, left: 50, bottom: 150, right: 50), animated: true)
             
         }
     }
