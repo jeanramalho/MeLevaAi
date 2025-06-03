@@ -94,7 +94,11 @@ class RouteViewController: UIViewController {
             self.contentView.routeMapView.addOverlay(route.polyline)
         // Ajusta zoom para mostrar toda a rota
             self.contentView.routeMapView.setVisibleMapRect(route.polyline.boundingMapRect, edgePadding: UIEdgeInsets(top: 50, left: 50, bottom: 150, right: 50), animated: true)
-            
         }
+
+    }
+    
+    @objc private func didTapConfirmRequest() {
+        
     }
 }
