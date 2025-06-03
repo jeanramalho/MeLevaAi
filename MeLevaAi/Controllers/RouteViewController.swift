@@ -7,12 +7,13 @@
 import Foundation
 import UIKit
 import CoreLocation
+import MapKit
 
 class RouteViewController: UIViewController {
     
     private let contentView: RouteView = RouteView()
     private let driver: Driver
-    private let pessenger: UserRequestModel
+    private let passenger: UserRequestModel
     
     private let locationManeger = CLLocationManager()
     
@@ -64,5 +65,30 @@ class RouteViewController: UIViewController {
     }
     
     // Desenha rota inicial(estática) entre as coordenadas no motorista e do passageiro
-    
+    private func drawRouteBetweenDriverAndPassenger(){
+        guard
+            let passengerCoord = passenger.coordinate,
+            let driverCoord = driver.coordinate
+        else {
+            print("Coordenadas inválidas para desenhar rota")
+                  return
+        }
+        
+        let srcPlaceMark = MKPlacemark(coordinate: driverCoord)
+        let dstPlaceMark = MKPlacemark(coordinate: passengerCoord)
+        
+        let req = MKDirections.Request()
+        req.source = MKMapItem(placemark: srcPlaceMark)
+        req.destination = MKMapItem(placemark: dstPlaceMark)
+        req.transportType = .automobile
+        
+        let directions = MKDirections(request: req)
+        directions.calculate { [weak self] response, error in
+            guard let self = self, let route = response?.routes.first else {
+                print("Erro ao calcular rota: \(error?.localizedDescription ?? "sem detalhes").")
+                                return
+            }
+            
+        }
+    }
 }
