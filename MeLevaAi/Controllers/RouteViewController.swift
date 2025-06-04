@@ -130,7 +130,7 @@ class RouteViewController: UIViewController {
         ]
         
         // Enviar os dados para o firebase em viagens/<requestId>
-        database.child("requisicoes").child(requestId).setValue(viagemDict) { [weak self] error, _ in
+        database.child("viagens").child(requestId).setValue(viagemDict) { [weak self] error, _ in
             if let error = error {
                 print("Erro ao criar viagem: \(error.localizedDescription)")
                 return
@@ -149,4 +149,27 @@ class RouteViewController: UIViewController {
 
 extension RouteViewController: CLLocationManagerDelegate {
     
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        
+        guard let loc = locations.last else {return}
+        
+        // atualizando o mapa para mostrar onde o motorista está em tempo real
+        let circle = MKCircle(center: loc.coordinate, radius: 5)
+        contentView.routeMapView.removeOverlays(contentView.routeMapView.overlays.filter { $0 is MKCircle})
+        contentView.routeMapView.addOverlay(circle)
+        
+        // Publica a nova localização do motorista no firebase
+        let driverRef = Database.database()
+            .reference()
+            .child("requisicoes")
+            .child(requestId)
+            .child("viagens")
+        
+        let latitudeStr = "\(loc.coordinate.latitude)"
+        let longitudeStr = "\(loc.coordinate.longitude)"
+        
+        driverRef.child("latitude").setValue(latitudeStr)
+        driverRef.child("longitude").setValue(longitudeStr)
+        
+    }
 }
