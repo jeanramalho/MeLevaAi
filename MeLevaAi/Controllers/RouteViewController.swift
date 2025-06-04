@@ -46,7 +46,7 @@ class RouteViewController: UIViewController {
     }
     
     private func setupContentView(){
-        
+        contentView.confirmRequestButton.addTarget(self, action: #selector(didTapConfirmRequest), for: .touchUpInside)
     }
     
     private func setHierarchy(){
@@ -171,5 +171,25 @@ extension RouteViewController: CLLocationManagerDelegate {
         driverRef.child("latitude").setValue(latitudeStr)
         driverRef.child("longitude").setValue(longitudeStr)
         
+    }
+}
+
+extension RouteViewController: MKMapViewDelegate {
+    func mapView(_ mapView: MKMapView, rendererFor overlay: any MKOverlay) -> MKOverlayRenderer {
+        
+        if let polyline = overlay as? MKPolyline {
+            let renderer = MKPolylineRenderer(polyline: polyline)
+            renderer.strokeColor = .systemBlue
+            renderer.lineWidth = 4
+            return renderer
+        }
+        
+        if let circle = overlay as? MKCircle {
+            let renderer = MKCircleRenderer(circle: circle)
+            renderer.fillColor = UIColor.systemBlue.withAlphaComponent(0.6)
+            return renderer
+        }
+        
+        return MKOverlayRenderer(overlay: overlay)
     }
 }
