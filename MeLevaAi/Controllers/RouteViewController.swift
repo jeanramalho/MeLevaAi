@@ -131,8 +131,22 @@ class RouteViewController: UIViewController {
         
         // Enviar os dados para o firebase em viagens/<requestId>
         database.child("requisicoes").child(requestId).setValue(viagemDict) { [weak self] error, _ in
+            if let error = error {
+                print("Erro ao criar viagem: \(error.localizedDescription)")
+                return
+            }
             
+            // Remover a requisição em requisições/<requestId>
+            database.child("requisicoes").child(self?.requestId ?? "").removeValue()
+            // Atualiza a UI e esconde botão
+            DispatchQueue.main.async {
+                self?.contentView.confirmRequestButton.isHidden = true
+            }
         }
         
     }
+}
+
+extension RouteViewController: CLLocationManagerDelegate {
+    
 }
