@@ -97,8 +97,12 @@ class RouteViewController: UIViewController {
         }
 
     }
-    
+    // Quando o motorista clicar em aceitar carona
     @objc private func didTapConfirmRequest() {
+        // Mudar o nó no firebase, criando o nó de viagens que vai ter os dados do motorista e passageiro
+        // Remover a requisição que estava em requests
+        // Publicar a localização do motorista em viagens/motorista
+        
         
     }
 }
