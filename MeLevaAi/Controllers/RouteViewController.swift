@@ -114,6 +114,25 @@ class RouteViewController: UIViewController {
         ]
         
         // Dados iniciais do motorista
+        guard let driverCoord = driver.coordinate else {return}
+        let driverDict: [String: Any] = [
+            "email": driver.email,
+            "nome": driver.nome,
+            "latitude": "\(driverCoord.latitude)",
+            "longitude": "\(driverCoord.longitude)"
+        ]
+        
+        // Monta o dicionário da viagem
+        let viagemDict: [String: Any] = [
+            "motorista": driverDict,
+            "passageiro": passengerDict,
+            "status": "em_andamento"
+        ]
+        
+        // Enviar os dados para o firebase em viagens/<requestId>
+        database.child("requisicoes").child(requestId).setValue(viagemDict) { [weak self] error, _ in
+            
+        }
         
     }
 }
