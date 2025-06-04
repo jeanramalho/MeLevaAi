@@ -8,6 +8,7 @@ import Foundation
 import UIKit
 import CoreLocation
 import MapKit
+import FirebaseDatabase
 
 class RouteViewController: UIViewController {
     
@@ -103,6 +104,16 @@ class RouteViewController: UIViewController {
         // Remover a requisição que estava em requests
         // Publicar a localização do motorista em viagens/motorista
         
+        let database = Database.database().reference()
+        
+        let passengerDict: [String: Any] = [
+            "email": passenger.email,
+            "nome": passenger.nome,
+            "latitude": passenger.latitude,
+            "longitude": passenger.longitude
+        ]
+        
+        // Dados iniciais do motorista
         
     }
 }
