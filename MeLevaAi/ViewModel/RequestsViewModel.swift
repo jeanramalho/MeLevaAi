@@ -75,34 +75,41 @@ class RequestsViewModel: NSObject {
         }
     }
     
-    public func getRequests(completion: @escaping ([UserRequestModel]) -> Void){
+    public func getRequests(completion: @escaping () -> Void){
         
         let database = Database.database().reference()
         let requestsRef = database.child("requisicoes")
         
         requestsRef.observe(.childAdded) { snapShot in
             
+            let requestId = snapShot.key
+            
             guard let value = snapShot.value as? [String: Any],
                   let nome = value["nome"] as? String,
                   let email = value["email"] as? String,
                   let latitude = value["latitude"] as? String,
-                  let longitude = value["longitude"] as? String else {
+                  let longitude = value["longitude"] as? String
+            else {
                 print("Erro ao converter snapshot")
                 return
             }
             
-            let request = UserRequestModel(email: email,
+            let model = UserRequestModel(email: email,
                                            nome: nome,
                                            latitude: latitude,
                                            longitude: longitude)
             
-            self.requestsList.append(request)
-            completion(self.requestsList)
+            self.requestsList.append((model: model, id: requestId))
+            completion()
         }
     }
     
     public func getARequest(at index: Int) -> UserRequestModel {
-        return requestsList[index]
+        return requestsList[index].model
+    }
+    
+    public func getRequestId(at index: Int) -> String {
+        return requestsList[index].id
     }
     
     public func requestsCount() -> Int {
