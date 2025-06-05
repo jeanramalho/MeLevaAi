@@ -16,7 +16,7 @@ class RequestsViewModel: NSObject {
     private let requestService = Requests()
     private let auth = Authentication()
     private var currentRequestId: String?
-    private var requestsList: [UserRequestModel] = []
+    private var requestsList: [(model: UserRequestModel, id: String)] = []
     
     public var userLocation = CLLocationCoordinate2D()
     public var isCarCalled: Bool = false
