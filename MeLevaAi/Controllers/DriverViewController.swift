@@ -104,8 +104,31 @@ extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         DispatchQueue.main.async {
-            let routeView: RouteViewController = RouteViewController()
-            self.navigationController?.pushViewController(routeView, animated: true)
+            // pega o model do passageiro e o requestId
+            let passengerModel = self.viewModel.getARequest(at: indexPath.row)
+            let requestId = self.viewModel.getRequestId(at: indexPath.row)
+            
+            self.authService.getReqUserData { [weak self] user in
+                guard
+                    let self = self,
+                    let user = user,
+                    let driverCoord = self.driverLocation
+                else {
+                    return
+                }
+                
+                let driverModel = Driver(email: user.email,
+                                         nome: user.nome,
+                                         coordinate: driverCoord)
+                
+                DispatchQueue.main.async {
+                    let route = RouteViewController(driver: driverModel,
+                                                    pessenger: passengerModel,
+                                                    requestId: requestId)
+                    
+                    self.navigationController?.pushViewController(route, animated: true)
+                }
+            }
         }
     }
     
