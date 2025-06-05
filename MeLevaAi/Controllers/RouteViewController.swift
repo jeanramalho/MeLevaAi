@@ -22,7 +22,7 @@ class RouteViewController: UIViewController {
     
     init(driver: Driver, pessenger: UserRequestModel, requestId: String) {
         self.driver = driver
-        self.pessenger = pessenger
+        self.passenger = pessenger
         self.requestId = requestId
         super.init(nibName: nil, bundle: nil)
     }
@@ -105,44 +105,52 @@ class RouteViewController: UIViewController {
         // Publicar a localização do motorista em viagens/motorista
         
         let database = Database.database().reference()
+        let rootRequisicoes = database.child("requisicoes").child(requestId)
+        let rootViagens = database.child("viagens").child(requestId)
         
-        let passengerDict: [String: Any] = [
-            "email": passenger.email,
-            "nome": passenger.nome,
-            "latitude": passenger.latitude,
-            "longitude": passenger.longitude
-        ]
-        
-        // Dados iniciais do motorista
-        guard let driverCoord = driver.coordinate else {return}
-        let driverDict: [String: Any] = [
-            "email": driver.email,
-            "nome": driver.nome,
-            "latitude": "\(driverCoord.latitude)",
-            "longitude": "\(driverCoord.longitude)"
-        ]
-        
-        // Monta o dicionário da viagem
-        let viagemDict: [String: Any] = [
-            "motorista": driverDict,
-            "passageiro": passengerDict,
-            "status": "em_andamento"
-        ]
-        
-        // Enviar os dados para o firebase em viagens/<requestId>
-        database.child("viagens").child(requestId).setValue(viagemDict) { [weak self] error, _ in
+        // limpa o nó de requisicoes
+        rootRequisicoes.removeValue { error, _ in
             if let error = error {
-                print("Erro ao criar viagem: \(error.localizedDescription)")
-                return
+                print("❌ Erro ao remover requisição: \(error.localizedDescription)")
+                            return
             }
             
-            // Remover a requisição em requisições/<requestId>
-            database.child("requisicoes").child(self?.requestId ?? "").removeValue()
-            // Atualiza a UI e esconde botão
-            DispatchQueue.main.async {
-                self?.contentView.confirmRequestButton.isHidden = true
+            let passengerDict: [String: Any] = [
+                "email": self.passenger.email,
+                "nome": self.passenger.nome,
+                "latitude": self.passenger.latitude,
+                "longitude": self.passenger.longitude
+            ]
+            
+            // Dados iniciais do motorista
+            guard let driverCoord = self.driver.coordinate else {return}
+            let driverDict: [String: Any] = [
+                "email": self.driver.email,
+                "nome": self.driver.nome,
+                "latitude": "\(driverCoord.latitude)",
+                "longitude": "\(driverCoord.longitude)"
+            ]
+            
+            // Monta o dicionário da viagem
+            let viagemDict: [String: Any] = [
+                "motorista": driverDict,
+                "passageiro": passengerDict,
+                "status": "em_andamento"
+            ]
+            
+            rootViagens.setValue(viagemDict) { error, _ in
+                if let error = error {
+                    print("❌ Erro ao criar viagem: \(error.localizedDescription)")
+                    return
+                }
+                // Atualiza a UI e esconde botão
+                DispatchQueue.main.async {
+                    self.contentView.confirmRequestButton.isHidden = true
+                }
             }
+            
         }
+  
         
     }
 }

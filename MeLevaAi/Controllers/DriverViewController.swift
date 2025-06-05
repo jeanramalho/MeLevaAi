@@ -56,7 +56,7 @@ class DriverViewController: UIViewController {
     }
     
     private func fetchRequests(){
-        self.viewModel.getRequests(completion: { [weak self] _ in
+        self.viewModel.getRequests(completion: { [weak self]  in
             DispatchQueue.main.async {
                 self?.contenView.requestsTableView.reloadData()
             }

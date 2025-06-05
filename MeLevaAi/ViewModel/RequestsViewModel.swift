@@ -80,17 +80,28 @@ class RequestsViewModel: NSObject {
         let database = Database.database().reference()
         let requestsRef = database.child("requisicoes")
         
+        requestsRef.removeAllObservers()
+        
         requestsRef.observe(.childAdded) { snapShot in
+            
+            print("–– snapshot.key:\n", snapShot.key)
+            print("–– snapshot.value:\n", snapShot.value ?? "Nulo")
+            
+            // tenta converter em dicionário
+            guard let value = snapShot.value as? [String: Any] else {
+                print("❌ snapshot.value não é [String:Any] em \(snapShot.key) → \(snapShot.value ?? "nulo")")
+                return
+            }
             
             let requestId = snapShot.key
             
-            guard let value = snapShot.value as? [String: Any],
+            guard
                   let nome = value["nome"] as? String,
                   let email = value["email"] as? String,
                   let latitude = value["latitude"] as? String,
                   let longitude = value["longitude"] as? String
             else {
-                print("Erro ao converter snapshot")
+                print("❌ Campos obrigatórios faltando ou em formato errado em \(snapShot.key): \(value)")
                 return
             }
             
