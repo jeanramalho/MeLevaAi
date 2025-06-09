@@ -144,21 +144,21 @@ class RouteViewController: UIViewController {
                 "longitude": "\(driverCoord.longitude)"
             ]
             
-            // 4) Montar dicionário da viagem inteira
+            // Monta dicionário da viagem inteira
             let viagemDict: [String: Any] = [
                 "motorista": driverDict,
                 "passageiro": passengerDict,
                 "status": "em_andamento"
             ]
             
-            // 5) Criar "/viagens/<requestId>" no Firebase
+            // Cria "/viagens/<requestId>" no Firebase
             viagensRef.setValue(viagemDict) { error, _ in
                 if let error = error {
                     print("❌ Erro ao criar viagem: \(error.localizedDescription)")
                     return
                 }
                 
-                // 6) Atualiza UI, esconde o botão
+                // Atualiza UI, esconde o botão
                 DispatchQueue.main.async {
                     self.contentView.confirmRequestButton.isHidden = true
                 }
