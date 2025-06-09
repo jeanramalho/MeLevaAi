@@ -153,13 +153,16 @@ MeLevaAi/
 
 ---
 
-## ✉️ Contato
+## 📞 Contato
 
-Se tiver dúvidas ou quiser colaborar, fique à vontade para entrar em contato:
+Estou disponível para discutir detalhes técnicos, arquiteturais ou oportunidades profissionais:
 
-- ✉️ jeanramalho.dev@gmail.com  
-- 🔗 [LinkedIn](https://www.linkedin.com/in/jean-ramalho/)  
+- LinkedIn: [Jean Ramalho](https://www.linkedin.com/in/jean-ramalho/)
+- Email: jeanramalho.dev@gmail.com
 
 ---
 
-> Desenvolvido com ❤ por Jean Ramalho  
+⭐️ Desenvolvido por Jean Ramalho | Desenvolvedor iOS | Swift & UIKit
+
+"Any fool can write code that a computer can understand. Good programmers write code that humans can understand."
+― Martin Fowler
