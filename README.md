@@ -5,22 +5,15 @@
 > **MeLevaAí** é um aplicativo iOS de caronas remuneradas, desenvolvido com Swift e ViewCode, utilizando arquitetura MVVM e Firebase Realtime Database.  
 
 ---
-<p align="center">
-  <table>
-    <tr>
-      <td><img src="https://github.com/user-attachments/assets/92280d18-4dc1-47d5-9fed-cac1dae29da7" width="200"/></td>
-      <td><img src="https://github.com/user-attachments/assets/c06e7b5f-00fb-4ecb-bef0-d6c0306b791f" width="200"/></td>
-      <td><img src="https://github.com/user-attachments/assets/d48a865e-4efa-4fbb-8179-bc9d2fc57b38" width="200"/></td>
-    </tr>
-    <tr>
-      <td><img src="https://github.com/user-attachments/assets/ba3cb762-95c2-4469-bc79-2610ad3b5a1d" width="200"/></td>
-      <td><img src="https://github.com/user-attachments/assets/472e88d8-8e29-4839-8bfa-58975f4427bf" width="200"/></td>
-      <td><img src="https://github.com/user-attachments/assets/4972991e-196d-4172-9dfb-e16cc9e48c9a" width="200"/></td>
-    </tr>
-  </table>
-</p>
-
-
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/92280d18-4dc1-47d5-9fed-cac1dae29da7" width="200"/>
+  <img src="https://github.com/user-attachments/assets/c06e7b5f-00fb-4ecb-bef0-d6c0306b791f" width="200"/>
+  <img src="https://github.com/user-attachments/assets/d48a865e-4efa-4fbb-8179-bc9d2fc57b38" width="200"/>
+  <br/>
+  <img src="https://github.com/user-attachments/assets/ba3cb762-95c2-4469-bc79-2610ad3b5a1d" width="200"/>
+  <img src="https://github.com/user-attachments/assets/472e88d8-8e29-4839-8bfa-58975f4427bf" width="200"/>
+  <img src="https://github.com/user-attachments/assets/4972991e-196d-4172-9dfb-e16cc9e48c9a" width="200"/>
+</div>
 ---
 
 
