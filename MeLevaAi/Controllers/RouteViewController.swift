@@ -38,7 +38,6 @@ class RouteViewController: UIViewController {
     
     private func setup() {
      
-        drawRouteBetweenDriverAndPassenger()
         setupLocationManager()
         setupContentView()
         setHierarchy()
@@ -73,125 +72,17 @@ class RouteViewController: UIViewController {
         locationManager.startUpdatingLocation()
     }
     
-    // Desenha a rota inicial (quando o motorista ainda não aceitou)
-    private func drawRouteBetweenDriverAndPassenger() {
-        guard
-            let passengerCoord = passenger.coordinate,
-            let driverCoord = driver.coordinate
-        else {
-            print("Coordenadas inválidas para desenhar rota")
-            return
-        }
-        
-        let srcPlacemark = MKPlacemark(coordinate: driverCoord)
-        let dstPlacemark = MKPlacemark(coordinate: passengerCoord)
-        
-        let req = MKDirections.Request()
-        req.source = MKMapItem(placemark: srcPlacemark)
-        req.destination = MKMapItem(placemark: dstPlacemark)
-        req.transportType = .automobile
-        
-        let directions = MKDirections(request: req)
-        directions.calculate { [weak self] response, error in
-            guard
-                let self = self,
-                let route = response?.routes.first
-            else {
-                print("Erro ao calcular rota: \(error?.localizedDescription ?? "sem detalhes")")
-                return
-            }
-            
-            // Adiciona a polyline da rota no mapa
-            self.contentView.routeMapView.addOverlay(route.polyline)
-            
-            // Ajusta o zoom para cobrir toda a rota
-            self.contentView.routeMapView.setVisibleMapRect(
-                route.polyline.boundingMapRect,
-                edgePadding: UIEdgeInsets(top: 50, left: 50, bottom: 150, right: 50),
-                animated: true
-            )
-        }
-    }
     
     // Quando o motorista clica em "Confirmar Carona"
     @objc private func didTapConfirmRequest() {
-        let database      = Database.database().reference()
-        let requisicoesRef = database.child("requisicoes").child(requestId)
-        let viagensRef     = database.child("viagens").child(requestId)
         
-        // Remove a requisição de "/requisicoes/<requestId>"
-        requisicoesRef.removeValue { [weak self] error, _ in
-            guard let self = self else { return }
-            if let error = error {
-                print("❌ Erro ao remover requisição: \(error.localizedDescription)")
-                return
-            }
-            
-            // Monta dicionário do passageiro
-            let passengerDict: [String: Any] = [
-                "email": self.passenger.email,
-                "nome": self.passenger.nome,
-                "latitude": self.passenger.latitude,
-                "longitude": self.passenger.longitude
-            ]
-            
-            // Montar dicionário inicial do motorista (com coordenadas atuais)
-            guard let driverCoord = self.driver.coordinate else { return }
-            let driverDict: [String: Any] = [
-                "email": self.driver.email,
-                "nome": self.driver.nome,
-                "latitude": "\(driverCoord.latitude)",
-                "longitude": "\(driverCoord.longitude)"
-            ]
-            
-            // Monta dicionário da viagem inteira
-            let viagemDict: [String: Any] = [
-                "motorista": driverDict,
-                "passageiro": passengerDict,
-                "status": "em_andamento"
-            ]
-            
-            // Cria "/viagens/<requestId>" no Firebase
-            viagensRef.setValue(viagemDict) { error, _ in
-                if let error = error {
-                    print("❌ Erro ao criar viagem: \(error.localizedDescription)")
-                    return
-                }
-                
-                // Atualiza UI, esconde o botão
-                DispatchQueue.main.async {
-                    self.contentView.confirmRequestButton.isHidden = true
-                }
-            }
-        }
     }
 }
 
 // MARK: – CLLocationManagerDelegate
 extension RouteViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let loc = locations.last else { return }
         
-        // Atualiza o mapa com um círculo que representa o motorista
-        let circle = MKCircle(center: loc.coordinate, radius: 5)
-        // Remove quaisquer círculos antigos antes de adicionar o novo
-        let oldCircles = contentView.routeMapView.overlays.filter { $0 is MKCircle }
-        contentView.routeMapView.removeOverlays(oldCircles)
-        contentView.routeMapView.addOverlay(circle)
-        
-        // Publica no nó correto no firebase "/viagens/<requestId>/motorista"
-        let motoristaRef = Database.database()
-            .reference()
-            .child("viagens")
-            .child(requestId)
-            .child("motorista")
-        
-        let latitudeStr  = "\(loc.coordinate.latitude)"
-        let longitudeStr = "\(loc.coordinate.longitude)"
-        
-        // Atualiza apenas os campos latitude e longitude de dentro de "motorista"
-        motoristaRef.child("latitude").setValue(latitudeStr)
-        motoristaRef.child("longitude").setValue(longitudeStr)
     }
 }
 
