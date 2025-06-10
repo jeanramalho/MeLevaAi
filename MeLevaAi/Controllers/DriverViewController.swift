@@ -103,33 +103,33 @@ extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        DispatchQueue.main.async {
-            // pega o model do passageiro e o requestId
-            let passengerModel = self.viewModel.getARequest(at: indexPath.row)
-            let requestId = self.viewModel.getRequestId(at: indexPath.row)
+       
+        // Pega dados da request e retorna em um Model de UserRequestModel
+        let passenger = self.viewModel.getARequest(at: indexPath.row)
+        // Pega o requestId do nó da requisição no firebase
+        let requestId = self.viewModel.getRequestId(at: indexPath.row)
+        // Pega os dados do motorista e instancia o model Driver
+        self.authService.getReqUserData { [weak self] user in
+            guard
+                let self = self,
+                let user = user,
+                let driverCoord = self.driverLocation
+            else {
+                return
+            }
+        
+        // instancia o model Driver
+        let driver = Driver(email: user.email, nome: user.nome, coordinate: driverCoord)
             
-            self.authService.getReqUserData { [weak self] user in
-                guard
-                    let self = self,
-                    let user = user,
-                    let driverCoord = self.driverLocation
-                else {
-                    return
-                }
+        // Envia dados para a viewcontroller de destino
+            DispatchQueue.main.async {
                 
-                let driverModel = Driver(email: user.email,
-                                         nome: user.nome,
-                                         coordinate: driverCoord)
+                let routeViewController = RouteViewController(driver: driver, pessenger: passenger, requestId: requestId)
                 
-                DispatchQueue.main.async {
-                    let route = RouteViewController(driver: driverModel,
-                                                    pessenger: passengerModel,
-                                                    requestId: requestId)
-                    
-                    self.navigationController?.pushViewController(route, animated: true)
-                }
+                self.navigationController?.setViewControllers([routeViewController], animated: true)
             }
         }
+        
     }
     
     

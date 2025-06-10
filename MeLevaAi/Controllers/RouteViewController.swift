@@ -66,10 +66,25 @@ class RouteViewController: UIViewController {
     }
     
     private func setupLocationManager() {
+        
+        let map = self.contentView.routeMapView
+        
         locationManager.delegate = self
         locationManager.requestWhenInUseAuthorization()
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
+        
+        guard let passengerCoord = self.passenger.coordinate else {return}
+        
+        let region = MKCoordinateRegion(center: passengerCoord, latitudinalMeters: 200, longitudinalMeters: 200)
+        // mostra região do passageiro ao abrir o mapa
+        map.setRegion(region, animated: true)
+        
+        // Mostrar nome do passageiro no mapa
+        let annotationPassegenger = MKPointAnnotation()
+        annotationPassegenger.coordinate = passengerCoord
+        annotationPassegenger.title = self.passenger.nome
+        map.addAnnotation(annotationPassegenger)
     }
     
     
