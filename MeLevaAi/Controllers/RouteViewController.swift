@@ -14,6 +14,8 @@ import FirebaseDatabase
 class RouteViewController: UIViewController {
     
     private let contentView: RouteView = RouteView()
+    private let requestViewModel = RequestsViewModel()
+    
     private let driver: Driver
     private let passenger: UserRequestModel
     
@@ -90,6 +92,9 @@ class RouteViewController: UIViewController {
     
     // Quando o motorista clica em "Confirmar Carona"
     @objc private func didTapConfirmRequest() {
+        
+        self.requestViewModel.updateConfirmedRequest(passengerEmail: self.passenger.email)
+        
         
     }
 }

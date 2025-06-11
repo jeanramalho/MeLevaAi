@@ -127,8 +127,35 @@ class RequestsViewModel: NSObject {
         return requestsList.count
     }
     
-    
     // Atualizar requisição confirmada
+    public func updateConfirmedRequest(passengerEmail: String, completion: @escaping (Bool) -> Void){
+        
+        let database = Database.database().reference()
+        let requests = database.child("requisicoes")
+        
+        requests.queryOrdered(byChild: "email").queryEqual(toValue: passengerEmail).observeSingleEvent(of: .childAdded) { snapshot in
+            
+            let driverData: [String: Any] = [
+                "motoristaLatitude": self.userLocation.latitude,
+                "motoristaLongitude": self.userLocation.longitude
+           ]
+            
+            snapshot.ref.updateChildValues(driverData) { error, _ in
+            
+                if let error = error {
+                    print("❌ Erro ao aceitar corrida: \(error.localizedDescription)")
+                    completion(false)
+                } else {
+                    completion(true)
+                }
+            }
+        } withCancel: { error in
+            print("Erro na query da requisição: \(error.localizedDescription)")
+            completion(false)
+        }
+    }
+    
+    
 }
 
 extension RequestsViewModel: CLLocationManagerDelegate {
