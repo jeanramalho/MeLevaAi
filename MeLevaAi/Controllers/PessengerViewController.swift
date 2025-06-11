@@ -21,6 +21,7 @@ class PessengerViewController: UIViewController {
         setup()
     }
     
+    
     private func setup(){
         
         self.title = "MeLevaAí - Passageiro"
@@ -32,6 +33,11 @@ class PessengerViewController: UIViewController {
         setupNavigationBar()
         setHierarchy()
         setConstraints()
+    }
+    
+    private func checkIfCarIsRequested(){
+        
+        self.requestViewModel.checkIfHaveRequests()
     }
     
     private func setupContentView(){

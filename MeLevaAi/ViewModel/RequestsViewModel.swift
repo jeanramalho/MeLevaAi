@@ -8,7 +8,7 @@ import Foundation
 import UIKit
 import MapKit
 import CoreLocation
-import FirebaseDatabase
+
 
 
 class RequestsViewModel: NSObject {
@@ -23,7 +23,7 @@ class RequestsViewModel: NSObject {
     
     
     public func requestACar(completion: @escaping(Bool) -> Void){
-        
+ 
         print("Tentando chamar um carro")
 
         auth.getReqUserData { user in
@@ -58,6 +58,32 @@ class RequestsViewModel: NSObject {
         }
     }
     
+    public func checkIfHaveRequests() {
+        
+        let database = auth.database
+        
+        self.auth.getReqUserData { user in
+            
+            guard let user = user else {return}
+            
+            let userEmail: String = user.email
+            let requests = database.child("requisicoes")
+            let getRequest = requests.queryOrdered(byChild: "email").queryEqual(toValue: userEmail)
+            
+            getRequest.observeSingleEvent(of: .childAdded) { snapshot in
+                
+                if snapshot.value != nil {
+                    self.isCarCalled = true
+                    
+                } else {
+                    self.isCarCalled = false
+                    
+                }
+            }
+        }
+        
+    }
+    
     public func cancellCarRequest(completion: @escaping (Bool) -> Void){
         
         guard let requestId = currentRequestId else {
@@ -77,7 +103,7 @@ class RequestsViewModel: NSObject {
     
     public func getRequests(completion: @escaping () -> Void){
         
-        let database = Database.database().reference()
+        let database = auth.database
         let requestsRef = database.child("requisicoes")
         
         requestsRef.removeAllObservers()
@@ -130,14 +156,17 @@ class RequestsViewModel: NSObject {
     // Atualizar requisição confirmada
     public func updateConfirmedRequest(passengerEmail: String, completion: @escaping (Bool) -> Void){
         
-        let database = Database.database().reference()
+        let database = auth.database
         let requests = database.child("requisicoes")
         
         requests.queryOrdered(byChild: "email").queryEqual(toValue: passengerEmail).observeSingleEvent(of: .childAdded) { snapshot in
             
+            let driverLatitude = String(self.userLocation.latitude)
+            let driverLongitude = String(self.userLocation.longitude)
+            
             let driverData: [String: Any] = [
-                "motoristaLatitude": self.userLocation.latitude,
-                "motoristaLongitude": self.userLocation.longitude
+                "motoristaLatitude": driverLatitude,
+                "motoristaLongitude": driverLongitude
            ]
             
             snapshot.ref.updateChildValues(driverData) { error, _ in

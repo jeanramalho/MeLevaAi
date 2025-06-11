@@ -92,12 +92,42 @@ class RouteViewController: UIViewController {
     
     // Quando o motorista clica em "Confirmar Carona"
     @objc private func didTapConfirmRequest() {
-        
+        // Aceita corrida enviando dados do motorista para o firebase
         self.requestViewModel.updateConfirmedRequest(passengerEmail: self.passenger.email) { [weak self] success in
             
             guard let self = self else {return}
             
             if success {
+                
+                //MARK: Exibi o caminho do passageiro no mapa
+                
+                // Cria uma instancia CLLocation com as coordenadas do passageiro
+                guard let passengerLati = self.passenger.coordinate?.latitude as? Double else {return}
+                guard let passengerLong = self.passenger.coordinate?.longitude as? Double else {return}
+                
+                let passengerCLL = CLLocation(latitude: passengerLati, longitude: passengerLong)
+                
+                CLGeocoder().reverseGeocodeLocation(passengerCLL) { local, error in
+                    
+                    if let error = error {
+                        
+                        print("Impossível criar trajeto: \(error.localizedDescription)")
+                        
+                    } else {
+                        
+                        if let localData = local?.first {
+                            let placeMark = MKPlacemark(placemark: localData)
+                            let mapItem = MKMapItem(placemark: placeMark)
+                            mapItem.name = self.passenger.nome
+                            
+                            // Define opções de como o trajeto será feito - no caso do app será dirigindo
+                            let options = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving]
+                            // Abre rota no maps
+                            mapItem.openInMaps(launchOptions: options)
+                        }
+                        
+                    }
+                }
                 
             } else {
                 
