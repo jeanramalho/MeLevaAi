@@ -126,6 +126,9 @@ class RequestsViewModel: NSObject {
     public func requestsCount() -> Int {
         return requestsList.count
     }
+    
+    
+    // Atualizar requisição confirmada
 }
 
 extension RequestsViewModel: CLLocationManagerDelegate {

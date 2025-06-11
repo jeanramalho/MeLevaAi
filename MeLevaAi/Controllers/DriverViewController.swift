@@ -126,7 +126,7 @@ extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
                 
                 let routeViewController = RouteViewController(driver: driver, pessenger: passenger, requestId: requestId)
                 
-                self.navigationController?.setViewControllers([routeViewController], animated: true)
+                self.navigationController?.pushViewController(routeViewController, animated: true)
             }
         }
         
