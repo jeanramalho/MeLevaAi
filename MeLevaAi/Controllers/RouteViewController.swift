@@ -93,7 +93,16 @@ class RouteViewController: UIViewController {
     // Quando o motorista clica em "Confirmar Carona"
     @objc private func didTapConfirmRequest() {
         
-        self.requestViewModel.updateConfirmedRequest(passengerEmail: self.passenger.email)
+        self.requestViewModel.updateConfirmedRequest(passengerEmail: self.passenger.email) { [weak self] success in
+            
+            guard let self = self else {return}
+            
+            if success {
+                
+            } else {
+                
+            }
+        }
         
         
     }
