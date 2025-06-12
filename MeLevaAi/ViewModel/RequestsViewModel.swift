@@ -19,6 +19,7 @@ class RequestsViewModel: NSObject {
     private var requestsList: [(model: UserRequestModel, id: String)] = []
     
     public var userLocation = CLLocationCoordinate2D()
+    public var driverLocation = CLLocationCoordinate2D()
     public var isCarCalled: Bool = false
     
     
@@ -98,6 +99,34 @@ class RequestsViewModel: NSObject {
         
     }
     
+    public func updatingRequest(){
+        
+        let database = auth.database
+        
+        self.auth.getReqUserData { user in
+            
+            guard let user = user else {return}
+            
+            let email = user.email
+            let requests = database.child("requisicoes")
+            let requestUser = requests.queryOrdered(byChild: "email").queryEqual(toValue: email)
+            
+            requestUser.observe(.childChanged) { snapshot in
+                
+                if let snapshoDict = snapshot.value as? [String: Any],
+                   let driverLatitude = snapshoDict["latitudeMotorista"] as? CLLocationDegrees,
+                   let driverLongitude = snapshoDict["longitudeMotorista"] as? CLLocationDegrees
+                {
+                    self.driverLocation = CLLocationCoordinate2D(latitude: driverLatitude, longitude: driverLongitude)
+                    
+                }
+            }
+            
+        
+                
+        }
+    }
+    
     public func cancellCarRequest(completion: @escaping (Bool) -> Void){
         
         guard let requestId = currentRequestId else {
@@ -175,8 +204,8 @@ class RequestsViewModel: NSObject {
         
         requests.queryOrdered(byChild: "email").queryEqual(toValue: passengerEmail).observeSingleEvent(of: .childAdded) { snapshot in
             
-            let driverLatitude = String(self.userLocation.latitude)
-            let driverLongitude = String(self.userLocation.longitude)
+            let driverLatitude = String(self.driverLocation.latitude)
+            let driverLongitude = String(self.driverLocation.longitude)
             
             let driverData: [String: Any] = [
                 "motoristaLatitude": driverLatitude,
