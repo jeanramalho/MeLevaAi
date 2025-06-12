@@ -27,7 +27,7 @@ class PessengerViewController: UIViewController {
         self.title = "MeLevaAí - Passageiro"
         
         viewModel.setupViewModel()
-        
+        checkIfCarIsRequested()
         setupMap()
         setupContentView()
         setupNavigationBar()
@@ -37,7 +37,12 @@ class PessengerViewController: UIViewController {
     
     private func checkIfCarIsRequested(){
         
-        self.requestViewModel.checkIfHaveRequests()
+        self.requestViewModel.checkIfHaveRequests { [weak self] hasARequest in
+            guard let self = self else {return}
+            DispatchQueue.main.async {
+                self.updateCarCallButton()
+            }
+        }
     }
     
     private func setupContentView(){

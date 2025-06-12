@@ -58,28 +58,42 @@ class RequestsViewModel: NSObject {
         }
     }
     
-    public func checkIfHaveRequests() {
+    public func checkIfHaveRequests(completion: @escaping (Bool) -> Void) {
         
         let database = auth.database
         
         self.auth.getReqUserData { user in
             
-            guard let user = user else {return}
-            
-            let userEmail: String = user.email
-            let requests = database.child("requisicoes")
-            let getRequest = requests.queryOrdered(byChild: "email").queryEqual(toValue: userEmail)
-            
-            getRequest.observeSingleEvent(of: .childAdded) { snapshot in
-                
-                if snapshot.value != nil {
-                    self.isCarCalled = true
-                    
-                } else {
-                    self.isCarCalled = false
-                    
-                }
+            guard let user = user else {
+                completion(false)
+                return
             }
+            
+            let email = user.email
+            let requests = database.child("requisicoes")
+            
+            requests
+                .queryOrdered(byChild: "email")
+                .queryEqual(toValue: email)
+                .observeSingleEvent(of: .childAdded) { snapshot in
+                    
+                    if let snapshotDict = snapshot.value as? [String: Any] {
+                        
+                        self.isCarCalled = true
+                        self.currentRequestId = snapshot.key
+                        completion(true)
+                    } else {
+                        self.isCarCalled = false
+                        self.currentRequestId = nil
+                        completion(false)
+                    }
+                } withCancel: { error in
+                    print("Erro ao achar requisição: \(error.localizedDescription)")
+                    self.isCarCalled = false
+                    self.currentRequestId = nil
+                    completion(false)
+                }
+   
         }
         
     }
