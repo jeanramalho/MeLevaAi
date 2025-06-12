@@ -21,6 +21,11 @@ class PessengerViewController: UIViewController {
         setup()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.checkIfCarIsRequested()
+    }
+    
     
     private func setup(){
         
@@ -66,7 +71,7 @@ class PessengerViewController: UIViewController {
         let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
         
         viewModel.onLocationUpdate = { [weak self] coordinate in
-                
+            guard let self = self else {return}
             let region = MKCoordinateRegion(center: coordinate, span: span)
             mapView.setRegion(region, animated: true)
         }
@@ -91,9 +96,8 @@ class PessengerViewController: UIViewController {
         if requestViewModel.isCarCalled {
             
             self.contentView.callCarButton.setTitle("Cancelar Carona", for: .normal)
-            self.contentView.callCarButton.backgroundColor = UIColor.red
+            self.contentView.callCarButton.backgroundColor = .systemRed
             self.contentView.callCarButton.setTitleColor(UIColor.white, for: .normal)
-            
             self.contentView.callCarButton.addTarget(self, action: #selector(cancellACar), for: .touchUpInside)
             
         } else {
@@ -101,7 +105,6 @@ class PessengerViewController: UIViewController {
             self.contentView.callCarButton.setTitle("Pedir Carona", for: .normal)
             self.contentView.callCarButton.backgroundColor = Colors.darkSecondary
             self.contentView.callCarButton.setTitleColor(Colors.defaultYellow, for: .normal)
-
             self.contentView.callCarButton.addTarget(self, action: #selector(getACar), for: .touchUpInside)
             
         }
@@ -121,6 +124,15 @@ class PessengerViewController: UIViewController {
     @objc private func getACar(){
         print("Chamando um carro")
         
+        guard !requestViewModel.isCarCalled else {
+            let alert = UIAlertController(title: "Já existe uma corrida pendente",
+                                          message: "Cancele ou conclua sua corrida atual antes de pedir outra.",
+                                          preferredStyle: .alert)
+            alert.addAction(.init(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
         guard let cordinate = viewModel.currentLocation else {
             print("Localização não disponível!")
             return
@@ -139,12 +151,18 @@ class PessengerViewController: UIViewController {
     
     @objc private func cancellACar(){
         
+        guard let requestId = self.requestViewModel.currentRequestId else {return}
+        
         requestViewModel.cancellCarRequest { [weak self] success in
             
             guard let self = self else {return}
                 
             if success {
+                
+                DispatchQueue.main.async {
                     self.updateCarCallButton()
+                }
+                    
                 }
         }
     }
