@@ -118,13 +118,26 @@ class RequestsViewModel: NSObject {
                    let driverLongitude = snapshoDict["longitudeMotorista"] as? CLLocationDegrees
                 {
                     self.driverLocation = CLLocationCoordinate2D(latitude: driverLatitude, longitude: driverLongitude)
-                    
+                    self.showDriverPassenger()
                 }
             }
             
         
                 
         }
+    }
+    
+    private func showDriverPassenger(){
+        
+        let driverLatitude = self.driverLocation.latitude
+        let driverLongitude = self.driverLocation.longitude
+        
+        let passengerLatitude = self.userLocation.latitude
+        let passengerLongitude = self.userLocation.longitude
+        
+        let currentDriverLocation = CLLocation(latitude: driverLatitude, longitude: driverLongitude)
+        let currentPassengerLocation = CLLocation(latitude: passengerLatitude, longitude: passengerLongitude)
+        
     }
     
     public func cancellCarRequest(completion: @escaping (Bool) -> Void){
