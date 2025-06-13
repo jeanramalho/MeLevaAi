@@ -99,7 +99,7 @@ class RequestsViewModel: NSObject {
         
     }
     
-    public func updatingRequest(){
+    public func updatingRequest(completion: @escaping (Bool, Double?) -> Void){
         
         let database = auth.database
         
@@ -118,7 +118,10 @@ class RequestsViewModel: NSObject {
                    let driverLongitude = snapshoDict["longitudeMotorista"] as? CLLocationDegrees
                 {
                     self.driverLocation = CLLocationCoordinate2D(latitude: driverLatitude, longitude: driverLongitude)
-                    self.showDriverPassenger()
+                    let distance = self.calcuteDistanceDriverToPassenger()
+                    completion(true, distance)
+                } else {
+                    completion(false, nil)
                 }
             }
             
@@ -127,7 +130,7 @@ class RequestsViewModel: NSObject {
         }
     }
     
-    private func showDriverPassenger(){
+    private func calcuteDistanceDriverToPassenger() -> Double {
         
         let driverLatitude = self.driverLocation.latitude
         let driverLongitude = self.driverLocation.longitude
@@ -141,6 +144,8 @@ class RequestsViewModel: NSObject {
         // Calcular distancia entre motorista e passageiro
         let calcDistance = currentDriverLocation.distance(from: currentPassengerLocation)
         let distanceKM = round(calcDistance / 1000)
+        
+        return distanceKM
     }
     
     public func cancellCarRequest(completion: @escaping (Bool) -> Void){
@@ -213,19 +218,17 @@ class RequestsViewModel: NSObject {
     }
     
     // Atualizar requisição confirmada
-    public func updateConfirmedRequest(passengerEmail: String, completion: @escaping (Bool) -> Void){
+    public func updateConfirmedRequest(passengerEmail: String, driverCoordinate: CLLocationCoordinate2D, completion: @escaping (Bool) -> Void){
         
         let database = auth.database
         let requests = database.child("requisicoes")
         
-        requests.queryOrdered(byChild: "email").queryEqual(toValue: passengerEmail).observeSingleEvent(of: .childAdded) { snapshot in
-            
-            let driverLatitude = String(self.driverLocation.latitude)
-            let driverLongitude = String(self.driverLocation.longitude)
+        requests.queryOrdered(byChild: "email").queryEqual(toValue: passengerEmail).observeSingleEvent(of: .childAdded)
+        { snapshot in
             
             let driverData: [String: Any] = [
-                "motoristaLatitude": driverLatitude,
-                "motoristaLongitude": driverLongitude
+                "motoristaLatitude": String(driverCoordinate.latitude),
+                "motoristaLongitude": String(driverCoordinate.longitude)
            ]
             
             snapshot.ref.updateChildValues(driverData) { error, _ in

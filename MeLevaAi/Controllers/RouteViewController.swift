@@ -92,8 +92,11 @@ class RouteViewController: UIViewController {
     
     // Quando o motorista clica em "Confirmar Carona"
     @objc private func didTapConfirmRequest() {
+        
+        guard let driverCoordinate = self.driver.coordinate else {return}
+        
         // Aceita corrida enviando dados do motorista para o firebase
-        self.requestViewModel.updateConfirmedRequest(passengerEmail: self.passenger.email) { [weak self] success in
+        self.requestViewModel.updateConfirmedRequest(passengerEmail: self.passenger.email, driverCoordinate: driverCoordinate) { [weak self] success in
             
             guard let self = self else {return}
             

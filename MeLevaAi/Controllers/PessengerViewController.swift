@@ -24,6 +24,7 @@ class PessengerViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.checkIfCarIsRequested()
+        self.updateMap()
     }
     
     
@@ -32,6 +33,8 @@ class PessengerViewController: UIViewController {
         self.title = "MeLevaAí - Passageiro"
         
         viewModel.setupViewModel()
+        
+        updateMap()
         checkIfCarIsRequested()
         setupMap()
         setupContentView()
@@ -74,6 +77,22 @@ class PessengerViewController: UIViewController {
             guard let self = self else {return}
             let region = MKCoordinateRegion(center: coordinate, span: span)
             mapView.setRegion(region, animated: true)
+        }
+        
+    }
+    
+    private func updateMap(){
+        
+        self.requestViewModel.updatingRequest { success, distance in
+            
+            if success {
+                let callCarButton = self.contentView.callCarButton
+                callCarButton.backgroundColor = .green
+                callCarButton.setTitleColor(.white, for: .normal)
+                callCarButton.setTitle("Motorista a \(String(describing: distance))KM de distancia", for: .normal)
+                
+                
+            }
         }
         
     }
