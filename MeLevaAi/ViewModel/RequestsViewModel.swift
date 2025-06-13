@@ -138,6 +138,9 @@ class RequestsViewModel: NSObject {
         let currentDriverLocation = CLLocation(latitude: driverLatitude, longitude: driverLongitude)
         let currentPassengerLocation = CLLocation(latitude: passengerLatitude, longitude: passengerLongitude)
         
+        // Calcular distancia entre motorista e passageiro
+        let calcDistance = currentDriverLocation.distance(from: currentPassengerLocation)
+        let distanceKM = round(calcDistance / 1000)
     }
     
     public func cancellCarRequest(completion: @escaping (Bool) -> Void){
