@@ -114,8 +114,8 @@ class RequestsViewModel: NSObject {
             requestUser.observe(.childChanged) { snapshot in
                 
                 if let snapshoDict = snapshot.value as? [String: Any],
-                   let driverLatitude = snapshoDict["latitudeMotorista"] as? CLLocationDegrees,
-                   let driverLongitude = snapshoDict["longitudeMotorista"] as? CLLocationDegrees
+                   let driverLatitude = snapshoDict["motoristaLatitude"] as? CLLocationDegrees,
+                   let driverLongitude = snapshoDict["motoristaLongitude"] as? CLLocationDegrees
                 {
                     self.driverLocation = CLLocationCoordinate2D(latitude: driverLatitude, longitude: driverLongitude)
                     let distance = self.calcuteDistanceDriverToPassenger()

@@ -95,6 +95,7 @@ class RouteViewController: UIViewController {
         
         guard let driverCoordinate = self.driver.coordinate else {return}
         
+        
         // Aceita corrida enviando dados do motorista para o firebase
         self.requestViewModel.updateConfirmedRequest(passengerEmail: self.passenger.email, driverCoordinate: driverCoordinate) { [weak self] success in
             
