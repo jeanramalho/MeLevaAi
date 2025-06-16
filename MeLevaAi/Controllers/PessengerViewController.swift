@@ -86,11 +86,13 @@ class PessengerViewController: UIViewController {
         self.requestViewModel.updatingRequest { success, distance in
             
             if success {
-                let callCarButton = self.contentView.callCarButton
-                callCarButton.backgroundColor = .green
-                callCarButton.setTitleColor(.white, for: .normal)
-                callCarButton.setTitle("Motorista a \(String(describing: distance))KM de distancia", for: .normal)
                 
+                DispatchQueue.main.async {
+                    let callCarButton = self.contentView.callCarButton
+                    callCarButton.backgroundColor = .green
+                    callCarButton.setTitleColor(.white, for: .normal)
+                    callCarButton.setTitle("Motorista a \(String(describing: distance))KM de distancia", for: .normal)
+                }
                 
             }
         }
