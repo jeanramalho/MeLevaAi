@@ -114,8 +114,8 @@ class RequestsViewModel: NSObject {
             requestUser.observe(.childChanged) { snapshot in
                 
                 if let snapshoDict = snapshot.value as? [String: Any],
-                   let driverLatitude = snapshoDict["motoristaLatitude"] as? CLLocationDegrees,
-                   let driverLongitude = snapshoDict["motoristaLongitude"] as? CLLocationDegrees
+                   let driverLatitude = snapshoDict["motoristaLatitude"] as? Double,
+                   let driverLongitude = snapshoDict["motoristaLongitude"] as? Double
                 {
                     self.driverLocation = CLLocationCoordinate2D(latitude: driverLatitude, longitude: driverLongitude)
                     let distance = self.calcuteDistanceDriverToPassenger()
@@ -227,8 +227,8 @@ class RequestsViewModel: NSObject {
         { snapshot in
             
             let driverData: [String: Any] = [
-                "motoristaLatitude": String(driverCoordinate.latitude),
-                "motoristaLongitude": String(driverCoordinate.longitude)
+                "motoristaLatitude": driverCoordinate.latitude,
+                "motoristaLongitude": driverCoordinate.longitude
            ]
             
             snapshot.ref.updateChildValues(driverData) { error, _ in

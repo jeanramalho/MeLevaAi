@@ -84,9 +84,9 @@ class PessengerViewController: UIViewController {
     private func updateMap(){
         
         
-        self.requestViewModel.updatingRequest { success, distance in
+        self.requestViewModel.updatingRequest {[weak self] success, distance in
             
-            var realDistance = String(format: "Motorista a %.2f km", distance ?? "")
+            guard let self = self, let realDistance = distance else {return}
             
             if success {
                 
@@ -94,7 +94,7 @@ class PessengerViewController: UIViewController {
                     let callCarButton = self.contentView.callCarButton
                     callCarButton.backgroundColor = .green
                     callCarButton.setTitleColor(.white, for: .normal)
-                    callCarButton.setTitle("Motorista a \(realDistance))KM de distancia", for: .normal)
+                    callCarButton.setTitle(String(format: "Motorista a %.2f km", realDistance), for: .normal)
                 }
                 
             }
