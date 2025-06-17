@@ -127,7 +127,7 @@ class PessengerViewController: UIViewController {
                 map.addAnnotation(passengerAnnotation)
                 
                 // 3 - Define região a ser exibida
-                let region = MKCoordinateRegion(center: passengerAnnotation.coordinate , latitudinalMeters: 200, longitudinalMeters: 200)
+                let region = MKCoordinateRegion(center: passengerAnnotation.coordinate , latitudinalMeters: 500, longitudinalMeters: 500)
                 map.setRegion(region, animated: true)
                 
             }
