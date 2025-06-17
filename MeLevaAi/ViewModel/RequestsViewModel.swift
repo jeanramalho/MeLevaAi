@@ -246,7 +246,7 @@ class RequestsViewModel: NSObject {
         }
     }
     
-    public func createDriverAndPassengerAnnotation(completion: @escaping (_ driverAnnotation: MKPointAnnotation, _ passengerAnnotation: MKPointAnnotation) -> Void) {
+    public func createDriverAndPassengerAnnotation(completion: @escaping (_ driverAnnotation: MKPointAnnotation?, _ passengerAnnotation: MKPointAnnotation?) -> Void) {
         
         let driverLatitude = self.driverLocation.latitude
         let driverLongitude = self.driverLocation.longitude

@@ -97,6 +97,8 @@ class PessengerViewController: UIViewController {
                     callCarButton.backgroundColor = .green
                     callCarButton.setTitleColor(.white, for: .normal)
                     callCarButton.setTitle(String(format: "Motorista a %.2f km", realDistance), for: .normal)
+                    
+                    self.showDriverOnView()
                 }
                 
             }
@@ -116,7 +118,23 @@ class PessengerViewController: UIViewController {
         map.removeAnnotations(map.annotations)
         
         // 2 - cria e adiciona a anotação do motorista
+        self.requestViewModel.createDriverAndPassengerAnnotation { driverAnnotation, passengerAnnotation in
+            
+            if let driverAnnotation = driverAnnotation,
+               let passengerAnnotation = passengerAnnotation {
+                
+                map.addAnnotation(driverAnnotation)
+                map.addAnnotation(passengerAnnotation)
+                
+                // 3 - Define região a ser exibida
+                let region = MKCoordinateRegion(center: passengerAnnotation.coordinate , latitudinalMeters: 200, longitudinalMeters: 200)
+                map.setRegion(region, animated: true)
+                
+            }
+
+        }
         
+      
     }
     
     private func setHierarchy(){
