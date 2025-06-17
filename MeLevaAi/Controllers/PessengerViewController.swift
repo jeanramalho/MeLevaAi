@@ -15,6 +15,8 @@ class PessengerViewController: UIViewController {
     private let viewModel = LocationViewModel()
     private let requestViewModel = RequestsViewModel()
     
+    private var driverOnTheWay: Bool = false
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -99,6 +101,10 @@ class PessengerViewController: UIViewController {
                 
             }
         }
+        
+    }
+    
+    private func showDriverOnView() {
         
     }
     
