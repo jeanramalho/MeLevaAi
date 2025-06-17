@@ -106,6 +106,17 @@ class PessengerViewController: UIViewController {
     
     private func showDriverOnView() {
         
+        self.driverOnTheWay = true
+        
+        let map = self.contentView.mapView
+        
+        // Exibe passageiro e motorista no mapa
+        
+        // 1 - remove todas as anotações
+        map.removeAnnotations(map.annotations)
+        
+        // 2 - cria e adiciona a anotação do motorista
+        
     }
     
     private func setHierarchy(){

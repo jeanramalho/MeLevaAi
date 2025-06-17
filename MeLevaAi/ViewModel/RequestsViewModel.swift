@@ -246,6 +246,30 @@ class RequestsViewModel: NSObject {
         }
     }
     
+    public func createDriverAndPassengerAnnotation(completion: @escaping (_ driverAnnotation: MKPointAnnotation, _ passengerAnnotation: MKPointAnnotation) -> Void) {
+        
+        let driverLatitude = self.driverLocation.latitude
+        let driverLongitude = self.driverLocation.longitude
+        
+        let passengerLatitude = self.userLocation.latitude
+        let passengerLongitude = self.userLocation.longitude
+        
+        let currentDriverLocation = CLLocationCoordinate2D(latitude: driverLatitude, longitude: driverLongitude)
+        let currentPassengerLocation = CLLocationCoordinate2D(latitude: passengerLatitude, longitude: passengerLongitude)
+        
+        // Criando annotation motorista
+        let driverAnnotation = MKPointAnnotation()
+        driverAnnotation.coordinate = currentDriverLocation
+        driverAnnotation.title = "Motorista"
+        
+        // Criando annotation passageiro
+        let passengerAnnotation = MKPointAnnotation()
+        passengerAnnotation.coordinate = currentPassengerLocation
+        passengerAnnotation.title = "Passageiro"
+        
+        completion(driverAnnotation, passengerAnnotation)
+    }
+    
     
 }
 
