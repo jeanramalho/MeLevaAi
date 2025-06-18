@@ -127,8 +127,13 @@ class PessengerViewController: UIViewController {
                 map.addAnnotation(driverAnnotation)
                 map.addAnnotation(passengerAnnotation)
                 
+                // Calcula valor para exibição otimizada do passageiro e motorista na tela
+                let diferenceLatitude = abs(passengerAnnotation.coordinate.latitude - driverAnnotation.coordinate.latitude) * 300000
+                
+                let diferenceLongitude = abs(passengerAnnotation.coordinate.longitude - driverAnnotation.coordinate.longitude) * 300000
+                
                 // 3 - Define região a ser exibida
-                let region = MKCoordinateRegion(center: passengerAnnotation.coordinate , latitudinalMeters: 500, longitudinalMeters: 500)
+                let region = MKCoordinateRegion(center: passengerAnnotation.coordinate , latitudinalMeters: diferenceLatitude, longitudinalMeters: diferenceLongitude)
                 map.setRegion(region, animated: true)
                 
             }
