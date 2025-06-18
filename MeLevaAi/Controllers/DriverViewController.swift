@@ -23,6 +23,10 @@ class DriverViewController: UIViewController {
         setup()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        self.fetchRequests()
+    }
+    
     private func setup(){
         
         self.title = "MeLevaAí - Motorista"
