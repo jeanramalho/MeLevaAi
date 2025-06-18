@@ -97,6 +97,7 @@ class PessengerViewController: UIViewController {
                     callCarButton.backgroundColor = .green
                     callCarButton.setTitleColor(.white, for: .normal)
                     callCarButton.setTitle(String(format: "Motorista a %.2f km", realDistance), for: .normal)
+                    callCarButton.removeTarget(nil, action: nil, for: .allEvents)
                     
                     self.showDriverOnView()
                 }
