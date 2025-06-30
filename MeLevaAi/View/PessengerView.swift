@@ -13,8 +13,54 @@ class PessengerView: UIView {
     lazy var destinyView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        
+        view.backgroundColor = UIColor(white: 1, alpha: 0.5)
+        view.layer.cornerRadius = 8
         return view
+    }()
+    
+    lazy var destinyMainStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        return stackView
+    }()
+    
+    lazy var currentLocationStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        return stackView
+    }()
+    
+    lazy var destinyLocationStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        return stackView
+    }()
+    
+    lazy var currentLocationTextField: PaddedTextField = {
+        let textField = PaddedTextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.text = "Meu Local"
+        textField.isEnabled = false
+        textField.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = Colors.darkSecondary.cgColor
+        textField.layer.cornerRadius = 6
+        return textField
+    }()
+    
+    lazy var destinyLocationTextField: PaddedTextField = {
+        let textField = PaddedTextField()
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.placeholder = "Digite seu destino..."
+        textField.isEnabled = false
+        textField.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        textField.layer.borderWidth = 1
+        textField.layer.borderColor = Colors.darkSecondary.cgColor
+        textField.layer.cornerRadius = 6
+        return textField
     }()
     
     lazy var mapView: MKMapView = {
