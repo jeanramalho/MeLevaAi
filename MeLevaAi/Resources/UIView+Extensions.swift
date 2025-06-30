@@ -18,6 +18,19 @@ extension UIView {
            ])
        }
     
-  
+    public func addTopBorder(to view: UIView, color: UIColor, height: CGFloat){
+        
+        // Remove camada anterior se houve
+        view.layer.sublayers?
+            .filter { $0.name == "topBorder"}
+            .forEach { $0.removeFromSuperlayer()}
+        
+        let border = CALayer()
+        border.name = "topBorder"
+        border.backgroundColor = color.cgColor
+        border.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: height)
+        
+        view.layer.addSublayer(border)
+    }
 
 }

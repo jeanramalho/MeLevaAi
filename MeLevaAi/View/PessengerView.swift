@@ -51,6 +51,14 @@ class PessengerView: UIView {
         return textField
     }()
     
+    lazy var currentLocationCircleView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .green
+        view.layer.cornerRadius = 8
+        return view
+    }()
+    
     lazy var destinyLocationTextField: PaddedTextField = {
         let textField = PaddedTextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -104,6 +112,8 @@ class PessengerView: UIView {
     private func setConstraints(){
         
         mapView.setConstraintsToParent(self)
+        
+        self.addTopBorder(to: destinyLocationStackView, color: .gray, height: 1)
         
         NSLayoutConstraint.activate([
             callCarButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18),
