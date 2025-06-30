@@ -13,7 +13,7 @@ class PessengerView: UIView {
     lazy var destinyView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(white: 1, alpha: 0.5)
+        view.backgroundColor = .white
         view.layer.cornerRadius = 8
         return view
     }()
@@ -55,6 +55,14 @@ class PessengerView: UIView {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .green
+        view.layer.cornerRadius = 8
+        return view
+    }()
+    
+    lazy var destinyLocationCircleView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .darkGray
         view.layer.cornerRadius = 8
         return view
     }()
@@ -105,8 +113,20 @@ class PessengerView: UIView {
     }
     
     private func setHierarchy(){
+        
         addSubview(mapView)
+        addSubview(destinyView)
         addSubview(callCarButton)
+        
+        destinyView.addSubview(destinyMainStackView)
+        
+        destinyMainStackView.addArrangedSubview(currentLocationStackView)
+        currentLocationStackView.addArrangedSubview(currentLocationCircleView)
+        currentLocationStackView.addArrangedSubview(currentLocationTextField)
+        
+        destinyMainStackView.addArrangedSubview(destinyLocationStackView)
+        destinyLocationStackView.addArrangedSubview(destinyLocationCircleView)
+        destinyLocationStackView.addArrangedSubview(destinyLocationCircleView)
     }
     
     private func setConstraints(){
@@ -116,6 +136,12 @@ class PessengerView: UIView {
         self.addTopBorder(to: destinyLocationStackView, color: .gray, height: 1)
         
         NSLayoutConstraint.activate([
+            
+            destinyView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 10),
+            destinyView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
+            destinyView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
+            destinyView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.2),
+            
             callCarButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18),
             callCarButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18),
             callCarButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30),
