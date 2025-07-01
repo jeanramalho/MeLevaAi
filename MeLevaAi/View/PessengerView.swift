@@ -22,7 +22,8 @@ class PessengerView: UIView {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
-        stackView.distribution = .fillProportionally
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 8
         return stackView
     }()
     
@@ -30,7 +31,8 @@ class PessengerView: UIView {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
-        stackView.distribution = .fill
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 8
         return stackView
     }()
     
@@ -38,7 +40,8 @@ class PessengerView: UIView {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
-        stackView.distribution = .fill
+        stackView.distribution = .equalSpacing
+        stackView.spacing = 8
         return stackView
     }()
     
@@ -47,7 +50,7 @@ class PessengerView: UIView {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.text = "Meu Local"
         textField.isEnabled = false
-        textField.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        textField.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
         textField.layer.borderWidth = 1
         textField.layer.borderColor = Colors.darkSecondary.cgColor
         textField.layer.cornerRadius = 6
@@ -75,7 +78,7 @@ class PessengerView: UIView {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Digite seu destino..."
         textField.isEnabled = false
-        textField.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        textField.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
         textField.layer.borderWidth = 1
         textField.layer.borderColor = Colors.darkSecondary.cgColor
         textField.layer.cornerRadius = 6
@@ -124,10 +127,11 @@ class PessengerView: UIView {
         destinyView.addSubview(destinyMainStackView)
         
         destinyMainStackView.addArrangedSubview(currentLocationStackView)
+        destinyMainStackView.addArrangedSubview(destinyLocationStackView)
+        
         currentLocationStackView.addArrangedSubview(currentLocationCircleView)
         currentLocationStackView.addArrangedSubview(currentLocationTextField)
         
-        destinyMainStackView.addArrangedSubview(destinyLocationStackView)
         destinyLocationStackView.addArrangedSubview(destinyLocationCircleView)
         destinyLocationStackView.addArrangedSubview(destinyLocationCircleView)
     }
@@ -150,11 +154,13 @@ class PessengerView: UIView {
             destinyMainStackView.trailingAnchor.constraint(equalTo: destinyView.trailingAnchor, constant: -8),
             destinyMainStackView.bottomAnchor.constraint(equalTo: destinyView.bottomAnchor, constant: -8),
             
+            destinyLocationTextField.heightAnchor.constraint(equalToConstant: 25),
+            
+            currentLocationTextField.heightAnchor.constraint(equalToConstant: 25),
+            
             currentLocationCircleView.heightAnchor.constraint(equalToConstant: 16),
-            currentLocationStackView.widthAnchor.constraint(equalToConstant: 16),
             
             destinyLocationCircleView.heightAnchor.constraint(equalToConstant: 16),
-            destinyLocationCircleView.widthAnchor.constraint(equalToConstant: 16),
             
             callCarButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18),
             callCarButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18),
