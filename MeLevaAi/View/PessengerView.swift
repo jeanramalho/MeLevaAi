@@ -22,6 +22,7 @@ class PessengerView: UIView {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
+        stackView.distribution = .fillProportionally
         return stackView
     }()
     
@@ -29,6 +30,7 @@ class PessengerView: UIView {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
+        stackView.distribution = .fill
         return stackView
     }()
     
@@ -36,6 +38,7 @@ class PessengerView: UIView {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
+        stackView.distribution = .fill
         return stackView
     }()
     
