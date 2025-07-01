@@ -154,9 +154,18 @@ class PessengerView: UIView {
             destinyMainStackView.trailingAnchor.constraint(equalTo: destinyView.trailingAnchor, constant: -8),
             destinyMainStackView.bottomAnchor.constraint(equalTo: destinyView.bottomAnchor, constant: -8),
             
-            destinyLocationTextField.heightAnchor.constraint(equalToConstant: 25),
+            currentLocationStackView.topAnchor.constraint(equalTo: destinyMainStackView.topAnchor),
+            currentLocationStackView.leadingAnchor.constraint(equalTo: destinyMainStackView.leadingAnchor),
+            currentLocationStackView.trailingAnchor.constraint(equalTo: destinyMainStackView.trailingAnchor),
             
-            currentLocationTextField.heightAnchor.constraint(equalToConstant: 25),
+            destinyMainStackView.topAnchor.constraint(equalTo: currentLocationStackView.bottomAnchor, constant: 8),
+            destinyMainStackView.leadingAnchor.constraint(equalTo: destinyMainStackView.leadingAnchor),
+            destinyMainStackView.trailingAnchor.constraint(equalTo: destinyMainStackView.trailingAnchor),
+            destinyMainStackView.bottomAnchor.constraint(equalTo: destinyMainStackView.bottomAnchor),
+            
+            destinyLocationTextField.heightAnchor.constraint(equalToConstant: 30),
+            
+            currentLocationTextField.heightAnchor.constraint(equalToConstant: 30),
             
             currentLocationCircleView.heightAnchor.constraint(equalToConstant: 16),
             
