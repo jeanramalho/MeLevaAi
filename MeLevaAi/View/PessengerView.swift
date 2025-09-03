@@ -3,87 +3,105 @@
 //  MeLevaAi
 //
 //  Created by Jean Ramalho on 27/04/25.
+//  Corrigido por ChatGPT: estrutura de stacks, constraints e borda superior
 //
-import Foundation
 import UIKit
 import MapKit
 
-class PessengerView: UIView {
+final class PessengerView: UIView {
+    
+    // MARK: - Subviews
     
     lazy var destinyView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.5)
+        // branco semi-transparente
+        view.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.6)
         view.layer.cornerRadius = 8
+        view.clipsToBounds = true
         return view
     }()
     
     lazy var destinyMainStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .vertical
-        stackView.distribution = .equalSpacing
-        stackView.spacing = 8
-        return stackView
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .vertical
+        stack.spacing = 8
+        stack.alignment = .fill
+        stack.distribution = .fill
+        stack.layoutMargins = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+        stack.isLayoutMarginsRelativeArrangement = true
+        return stack
     }()
     
+    // linha do "Meu Local" (círculo + label/textfield não editável)
     lazy var currentLocationStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
-        stackView.backgroundColor = .red
-        stackView.spacing = 8
-        return stackView
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.spacing = 8
+        stack.alignment = .center     // alinha verticalmente o círculo e o textField
+        stack.distribution = .fill
+        return stack
     }()
     
+    // linha do "Destino" (círculo + textField editável)
     lazy var destinyLocationStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .horizontal
-        stackView.distribution = .equalSpacing
-        stackView.backgroundColor = .green
-        stackView.spacing = 8
-        return stackView
+        let stack = UIStackView()
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.axis = .horizontal
+        stack.spacing = 8
+        stack.alignment = .center
+        stack.distribution = .fill
+        return stack
     }()
     
+    // TextField não editável (Meu Local)
     lazy var currentLocationTextField: PaddedTextField = {
         let textField = PaddedTextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.text = "Meu Local"
         textField.isEnabled = false
-        textField.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        textField.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         textField.layer.borderWidth = 1
         textField.layer.borderColor = Colors.darkSecondary.cgColor
         textField.layer.cornerRadius = 6
+        textField.backgroundColor = UIColor(white: 1.0, alpha: 0.0)
+        textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return textField
     }()
     
+    // Círculo pequeno indicando origem
     lazy var currentLocationCircleView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .green
-        view.layer.cornerRadius = 8
+        view.backgroundColor = .systemGreen
+        // cornerRadius será ajustado no layoutSubviews para garantir metade da largura
         return view
     }()
     
+    // Círculo pequeno indicando destino
     lazy var destinyLocationCircleView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .lightGray
-        view.layer.cornerRadius = 8
         return view
     }()
     
+    // TextField editável (Destino)
     lazy var destinyLocationTextField: PaddedTextField = {
         let textField = PaddedTextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Digite seu destino..."
-        textField.isEnabled = false
-        textField.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        textField.isEnabled = true                 // EDITÁVEL
+        textField.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         textField.layer.borderWidth = 1
         textField.layer.borderColor = Colors.darkSecondary.cgColor
         textField.layer.cornerRadius = 6
+        textField.backgroundColor = .white
+        textField.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         return textField
     }()
     
@@ -94,89 +112,117 @@ class PessengerView: UIView {
     }()
     
     lazy var callCarButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle("Pedir Carona", for: .normal)
         button.backgroundColor = Colors.darkSecondary
         button.setTitleColor(Colors.defaultYellow, for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 24, weight: .bold)
+        button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         button.layer.cornerRadius = 12
         return button
     }()
+    
+    // MARK: - Init
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupUI()
     }
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    // MARK: - Layout
     
-    private func setupUI(){
-        
+    private func setupUI() {
         backgroundColor = .white
-        setHierarchy()
-        setConstraints()
-    }
-    
-    private func setHierarchy(){
-        
+        // add subviews na ordem correta
         addSubview(mapView)
         addSubview(destinyView)
         addSubview(callCarButton)
         
+        // Hierarquia dentro da detinyView
         destinyView.addSubview(destinyMainStackView)
-        
         destinyMainStackView.addArrangedSubview(currentLocationStackView)
         destinyMainStackView.addArrangedSubview(destinyLocationStackView)
         
+        // Linha do local atual
         currentLocationStackView.addArrangedSubview(currentLocationCircleView)
         currentLocationStackView.addArrangedSubview(currentLocationTextField)
         
+        // Linha do destino
         destinyLocationStackView.addArrangedSubview(destinyLocationCircleView)
-        destinyLocationStackView.addArrangedSubview(destinyLocationCircleView)
+        destinyLocationStackView.addArrangedSubview(destinyLocationTextField)
+        
+        setConstraints()
+        
+        // adiciona borda superior fina para destacar a destinyView
+        addTopBorder(to: destinyView, color: UIColor.systemGray3.cgColor, height: 0.5)
     }
     
-    private func setConstraints(){
-        
-        mapView.setConstraintsToParent(self)
-        
-        self.addTopBorder(to: destinyLocationStackView, color: .gray, height: 1)
-        
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // garante o cornerRadius correto para os círculos (metade da largura)
+        currentLocationCircleView.layer.cornerRadius = currentLocationCircleView.bounds.height / 2
+        destinyLocationCircleView.layer.cornerRadius = destinyLocationCircleView.bounds.height / 2
+    }
+    
+    private func setConstraints() {
         NSLayoutConstraint.activate([
+            // mapa ocupa todo o fundo
+            mapView.topAnchor.constraint(equalTo: topAnchor),
+            mapView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            mapView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            mapView.bottomAnchor.constraint(equalTo: bottomAnchor),
             
-            destinyView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 10),
-            destinyView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 15),
-            destinyView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
-            destinyView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.15),
+            // destinyView no topo, com margens e altura relativa (ajustável)
+            destinyView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 12),
+            destinyView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+            destinyView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
+            destinyView.heightAnchor.constraint(equalToConstant: 110),
             
+            // stack view preenche a destinyView com margins (já configuradas)
             destinyMainStackView.topAnchor.constraint(equalTo: destinyView.topAnchor),
             destinyMainStackView.leadingAnchor.constraint(equalTo: destinyView.leadingAnchor),
             destinyMainStackView.trailingAnchor.constraint(equalTo: destinyView.trailingAnchor),
             destinyMainStackView.bottomAnchor.constraint(equalTo: destinyView.bottomAnchor),
             
-            currentLocationStackView.topAnchor.constraint(equalTo: destinyMainStackView.topAnchor),
-            currentLocationStackView.leadingAnchor.constraint(equalTo: destinyMainStackView.leadingAnchor),
-            currentLocationStackView.trailingAnchor.constraint(equalTo: destinyMainStackView.trailingAnchor),
-            
-            destinyMainStackView.topAnchor.constraint(equalTo: currentLocationStackView.bottomAnchor, constant: 8),
-            destinyMainStackView.leadingAnchor.constraint(equalTo: destinyMainStackView.leadingAnchor),
-            destinyMainStackView.trailingAnchor.constraint(equalTo: destinyMainStackView.trailingAnchor),
-            destinyMainStackView.bottomAnchor.constraint(equalTo: destinyMainStackView.bottomAnchor),
-            
-            destinyLocationTextField.heightAnchor.constraint(equalToConstant: 30),
-            
-            currentLocationTextField.heightAnchor.constraint(equalToConstant: 30),
-            
+            // circle sizes (height + width) => tamanho pequeno e fixo
             currentLocationCircleView.heightAnchor.constraint(equalToConstant: 16),
-            
+            currentLocationCircleView.widthAnchor.constraint(equalToConstant: 16),
             destinyLocationCircleView.heightAnchor.constraint(equalToConstant: 16),
+            destinyLocationCircleView.widthAnchor.constraint(equalToConstant: 16),
             
+            // textfields height
+            currentLocationTextField.heightAnchor.constraint(equalToConstant: 36),
+            destinyLocationTextField.heightAnchor.constraint(equalToConstant: 36),
+            
+            // botão inferior
             callCarButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 18),
             callCarButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -18),
-            callCarButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -30),
-            callCarButton.heightAnchor.constraint(equalToConstant: 60),
+            callCarButton.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            callCarButton.heightAnchor.constraint(equalToConstant: 56)
         ])
+    }
+    
+    // MARK: - Helpers
+    
+    /// Adiciona uma borda superior (CALayer) à view indicada
+    private func addTopBorder(to view: UIView, color: CGColor, height: CGFloat) {
+        // remove border antiga (se houver)
+        view.layer.sublayers?
+            .filter { $0.name == "topBorder" }
+            .forEach { $0.removeFromSuperlayer() }
+        
+        let border = CALayer()
+        border.name = "topBorder"
+        border.backgroundColor = color
+        border.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: height)
+        border.contentsScale = UIScreen.main.scale
+        view.layer.addSublayer(border)
+        
+        // Ajusta largura quando a view for redimensionada
+        // (obs: será reposicionado em layoutSubviews se necessário)
+        DispatchQueue.main.async {
+            border.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: height)
+        }
     }
 }
