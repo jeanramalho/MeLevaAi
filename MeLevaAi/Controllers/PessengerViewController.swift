@@ -36,6 +36,8 @@ class PessengerViewController: UIViewController {
         
         viewModel.setupViewModel()
         
+        hideKeyboard(self, contentView: self.contentView)
+        
         updateMap()
         checkIfCarIsRequested()
         setupMap()
