@@ -13,7 +13,7 @@ class PessengerView: UIView {
     lazy var destinyView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(red: 1.0, green: 1.0, blue: 1.0, alpha: 0.5)
         view.layer.cornerRadius = 8
         return view
     }()
@@ -32,6 +32,7 @@ class PessengerView: UIView {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.distribution = .equalSpacing
+        stackView.backgroundColor = .red
         stackView.spacing = 8
         return stackView
     }()
@@ -41,6 +42,7 @@ class PessengerView: UIView {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.distribution = .equalSpacing
+        stackView.backgroundColor = .green
         stackView.spacing = 8
         return stackView
     }()
@@ -149,10 +151,10 @@ class PessengerView: UIView {
             destinyView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -15),
             destinyView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.15),
             
-            destinyMainStackView.topAnchor.constraint(equalTo: destinyView.topAnchor, constant: 8),
-            destinyMainStackView.leadingAnchor.constraint(equalTo: destinyView.leadingAnchor, constant: 8),
-            destinyMainStackView.trailingAnchor.constraint(equalTo: destinyView.trailingAnchor, constant: -8),
-            destinyMainStackView.bottomAnchor.constraint(equalTo: destinyView.bottomAnchor, constant: -8),
+            destinyMainStackView.topAnchor.constraint(equalTo: destinyView.topAnchor),
+            destinyMainStackView.leadingAnchor.constraint(equalTo: destinyView.leadingAnchor),
+            destinyMainStackView.trailingAnchor.constraint(equalTo: destinyView.trailingAnchor),
+            destinyMainStackView.bottomAnchor.constraint(equalTo: destinyView.bottomAnchor),
             
             currentLocationStackView.topAnchor.constraint(equalTo: destinyMainStackView.topAnchor),
             currentLocationStackView.leadingAnchor.constraint(equalTo: destinyMainStackView.leadingAnchor),
