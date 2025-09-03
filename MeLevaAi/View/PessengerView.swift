@@ -177,7 +177,7 @@ final class PessengerView: UIView {
             destinyView.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: 12),
             destinyView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
             destinyView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -16),
-            destinyView.heightAnchor.constraint(equalToConstant: 110),
+            destinyView.heightAnchor.constraint(equalTo: heightAnchor, multiplier: 0.15),
             
             // stack view preenche a destinyView com margins (já configuradas)
             destinyMainStackView.topAnchor.constraint(equalTo: destinyView.topAnchor),
