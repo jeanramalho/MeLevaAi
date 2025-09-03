@@ -61,6 +61,7 @@ final class PessengerView: UIView {
         let textField = PaddedTextField()
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.text = "Meu Local"
+        textField.backgroundColor = .white
         textField.isEnabled = false
         textField.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
         textField.layer.borderWidth = 1
@@ -77,6 +78,7 @@ final class PessengerView: UIView {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .lightGray
+        view.clipsToBounds = true
         // cornerRadius será ajustado no layoutSubviews para garantir metade da largura
         return view
     }()
@@ -86,6 +88,7 @@ final class PessengerView: UIView {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.backgroundColor = .systemGreen
+        view.clipsToBounds = true
         return view
     }()
     
@@ -95,6 +98,7 @@ final class PessengerView: UIView {
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Digite seu destino..."
         textField.isEnabled = true                 // EDITÁVEL
+        textField.backgroundColor = .white
         textField.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         textField.layer.borderWidth = 1
         textField.layer.borderColor = Colors.darkSecondary.cgColor
