@@ -23,37 +23,37 @@ final class PessengerView: UIView {
     }()
     
     lazy var destinyMainStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.axis = .vertical
-        stack.spacing = 8
-        stack.alignment = .fill
-        stack.distribution = .fill
-        stack.layoutMargins = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
-        stack.isLayoutMarginsRelativeArrangement = true
-        return stack
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .vertical
+        stackView.spacing = 8
+        stackView.alignment = .fill
+        stackView.distribution = .fill
+        stackView.layoutMargins = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
+        stackView.isLayoutMarginsRelativeArrangement = true
+        return stackView
     }()
     
     // linha do "Meu Local" (círculo + label/textfield não editável)
     lazy var currentLocationStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.axis = .horizontal
-        stack.spacing = 8
-        stack.alignment = .center     // alinha verticalmente o círculo e o textField
-        stack.distribution = .fill
-        return stack
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.alignment = .center     // alinha verticalmente o círculo e o textField
+        stackView.distribution = .fill
+        return stackView
     }()
     
     // linha do "Destino" (círculo + textField editável)
     lazy var destinyLocationStackView: UIStackView = {
-        let stack = UIStackView()
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        stack.axis = .horizontal
-        stack.spacing = 8
-        stack.alignment = .center
-        stack.distribution = .fill
-        return stack
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.spacing = 8
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        return stackView
     }()
     
     // TextField não editável (Meu Local)
@@ -76,7 +76,7 @@ final class PessengerView: UIView {
     lazy var currentLocationCircleView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .systemGreen
+        view.backgroundColor = .lightGray
         // cornerRadius será ajustado no layoutSubviews para garantir metade da largura
         return view
     }()
@@ -85,7 +85,7 @@ final class PessengerView: UIView {
     lazy var destinyLocationCircleView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .lightGray
+        view.backgroundColor = .systemGreen
         return view
     }()
     
