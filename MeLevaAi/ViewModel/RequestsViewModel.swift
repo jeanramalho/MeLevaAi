@@ -19,6 +19,7 @@ class RequestsViewModel: NSObject {
     private var requestsList: [(model: UserRequestModel, id: String)] = []
     
     public var userLocation = CLLocationCoordinate2D()
+    public var destinyLocation = CLLocationCoordinate2D()
     public var driverLocation = CLLocationCoordinate2D()
     public var isCarCalled: Bool = false
     
