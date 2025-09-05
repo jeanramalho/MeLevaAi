@@ -224,6 +224,13 @@ class PessengerViewController: UIViewController {
                         guard let bairro = dadosLocal.subLocality else {return}
                         guard let cidade = dadosLocal.locality else {return}
                         guard let cep = dadosLocal.postalCode else {return}
+                        
+                        let completeAdress = "rua: \(rua), n:\(numero), bairro: \(bairro) - \(cidade) - cep: \(cep)"
+                        
+                        if let destinyLatitude = dadosLocal.location?.coordinate.latitude,
+                           let destinyLongitude = dadosLocal.location?.coordinate.longitude {
+                            
+                        }
                     }
                     
                     
