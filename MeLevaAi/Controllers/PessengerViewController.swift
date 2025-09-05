@@ -206,6 +206,13 @@ class PessengerViewController: UIViewController {
             print("Localização não disponível!")
             return
         }
+        
+        if destinyLocation != "" {
+            
+            CLGeocoder().geocodeAddressString(destinyLocation) { local, error in
+                if error == nil
+            }
+            
             self.requestViewModel.userLocation = cordinate
             
             self.requestViewModel.requestACar { [weak self] isCarCalled in
@@ -216,6 +223,17 @@ class PessengerViewController: UIViewController {
                     self.updateCarCallButton()
                 }
             }
+            
+        } else {
+            let alert = UIAlertController(title: "Digite o endereço de destino!",
+                                          message: "Digite o endereço de destino antes de chamar um carro!",
+                                          preferredStyle: .alert)
+            alert.addAction(.init(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+            
     }
     
     @objc private func cancellACar(){
