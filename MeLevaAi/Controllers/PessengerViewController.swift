@@ -213,6 +213,21 @@ class PessengerViewController: UIViewController {
                 if error == nil,
                    let dadosLocal = local?.first {
                     
+                    if dadosLocal.thoroughfare != nil,
+                       dadosLocal.subThoroughfare != nil,
+                       dadosLocal.subLocality != nil,
+                       dadosLocal.locality != nil,
+                       dadosLocal.postalCode != nil {
+                        
+                        guard let rua = dadosLocal.thoroughfare else {return}
+                        guard let numero = dadosLocal.subThoroughfare else {return}
+                        guard let bairro = dadosLocal.subLocality else {return}
+                        guard let cidade = dadosLocal.locality else {return}
+                        guard let cep = dadosLocal.postalCode else {return}
+                    }
+                    
+                    
+                    
                 }
             }
             
