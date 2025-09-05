@@ -191,6 +191,8 @@ class PessengerViewController: UIViewController {
     @objc private func getACar(){
         print("Chamando um carro")
         
+        let destinyLocation = self.contentView.destinyLocationTextField.text
+        
         guard !requestViewModel.isCarCalled else {
             let alert = UIAlertController(title: "Já existe uma corrida pendente",
                                           message: "Cancele ou conclua sua corrida atual antes de pedir outra.",
