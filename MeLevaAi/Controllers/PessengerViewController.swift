@@ -191,7 +191,7 @@ class PessengerViewController: UIViewController {
     @objc private func getACar(){
         print("Chamando um carro")
         
-        let destinyLocation = self.contentView.destinyLocationTextField.text
+        guard let destinyLocation = self.contentView.destinyLocationTextField.text as String? else {return}
         
         guard !requestViewModel.isCarCalled else {
             let alert = UIAlertController(title: "Já existe uma corrida pendente",
@@ -210,7 +210,10 @@ class PessengerViewController: UIViewController {
         if destinyLocation != "" {
             
             CLGeocoder().geocodeAddressString(destinyLocation) { local, error in
-                if error == nil
+                if error == nil,
+                   let dadosLocal = local?.first {
+                    
+                }
             }
             
             self.requestViewModel.userLocation = cordinate
