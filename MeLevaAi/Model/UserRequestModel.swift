@@ -12,14 +12,29 @@ struct UserRequestModel {
     var nome: String
     var latitude: String
     var longitude: String
+    var destinyLatitude: String
+    var destinyLongitude: String
     
     // converte as strings das coordenadas para CLLocationCoordinate2D
     var coordinate: CLLocationCoordinate2D? {
         guard
             let lat = Double(latitude),
             let long = Double(longitude)
+            
+            
         else {return nil}
         return CLLocationCoordinate2D(latitude: lat, longitude: long)
+                
+    }
+    
+    // converte as strings das coordenadas do destino para CLLocationCoordinate2D
+    var destinyCoordinate: CLLocationCoordinate2D? {
+        guard
+            let destLat = Double(destinyLatitude),
+            let destLon = Double(destinyLongitude)
+            
+        else {return nil}
+        return CLLocationCoordinate2D(latitude: destLat, longitude: destLon)
                 
     }
 }

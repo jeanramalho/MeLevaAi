@@ -37,13 +37,17 @@ class RequestsViewModel: NSObject {
             
             let userLatitude = String(self.userLocation.latitude)
             let userLongitude = String(self.userLocation.longitude)
+            let destinyLatitude = String(self.destinyLocation.latitude)
+            let destinyLongitude = String(self.destinyLocation.longitude)
             
             print("latitude: \(userLatitude) e longitude: \(userLongitude)")
             
             let reqUserData: UserRequestModel = UserRequestModel(email: user.email,
                                                                  nome: user.nome,
                                                                  latitude: userLatitude,
-                                                                 longitude: userLongitude)
+                                                                 longitude: userLongitude,
+                                                                 destinyLatitude: destinyLatitude,
+                                                                 destinyLongitude: destinyLongitude   )
             
             self.requestService.createRequest(user: reqUserData) { success, requestId in
                 if success, let requestId = requestId {
