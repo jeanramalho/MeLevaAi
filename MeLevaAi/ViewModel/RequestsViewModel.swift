@@ -194,7 +194,10 @@ class RequestsViewModel: NSObject {
                   let nome = value["nome"] as? String,
                   let email = value["email"] as? String,
                   let latitude = value["latitude"] as? String,
-                  let longitude = value["longitude"] as? String
+                  let longitude = value["longitude"] as? String,
+                  let destinyLatitude = value["longitude"] as? String,
+                  let destinyLongitude = value["longitude"] as? String
+                    
             else {
                 print("❌ Campos obrigatórios faltando ou em formato errado em \(snapShot.key): \(value)")
                 return
@@ -203,7 +206,9 @@ class RequestsViewModel: NSObject {
             let model = UserRequestModel(email: email,
                                            nome: nome,
                                            latitude: latitude,
-                                           longitude: longitude)
+                                           longitude: longitude,
+                                           destinyLatitude: destinyLatitude,
+                                           destinyLongitude: destinyLongitude )
             
             self.requestsList.append((model: model, id: requestId))
             completion()
