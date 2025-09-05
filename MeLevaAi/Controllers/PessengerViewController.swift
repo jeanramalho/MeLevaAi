@@ -230,6 +230,30 @@ class PessengerViewController: UIViewController {
                         if let destinyLatitude = dadosLocal.location?.coordinate.latitude,
                            let destinyLongitude = dadosLocal.location?.coordinate.longitude {
                             
+                            let destinyCoordinate = CLLocationCoordinate2D(latitude: destinyLatitude, longitude: destinyLongitude)
+                            
+                            let alert = UIAlertController(title: "Confirme o endereço de destino",
+                                                          message: completeAdress,
+                                                          preferredStyle: .alert)
+                            let cancellAction = UIAlertAction(title: "CANCELAR", style: .cancel, handler: nil)
+                            let confirmAction = UIAlertAction(title: "OK", style: .default) { alertAction in
+                                
+                                self.requestViewModel.userLocation = cordinate
+                                self.requestViewModel.destinyLocation = destinyCoordinate
+                                
+                                self.requestViewModel.requestACar { [weak self] isCarCalled in
+                                    
+                                guard let self = self else {return}
+                                    
+                                    if isCarCalled {
+                                        self.updateCarCallButton()
+                                    }
+                                }
+                            }
+                            
+                            alert.addAction(cancellAction)
+                            alert.addAction(confirmAction)
+                            self.present(alert, animated: true)
                         }
                     }
                     
@@ -238,16 +262,7 @@ class PessengerViewController: UIViewController {
                 }
             }
             
-            self.requestViewModel.userLocation = cordinate
-            
-            self.requestViewModel.requestACar { [weak self] isCarCalled in
-                
-            guard let self = self else {return}
-                
-                if isCarCalled {
-                    self.updateCarCallButton()
-                }
-            }
+           
             
         } else {
             let alert = UIAlertController(title: "Digite o endereço de destino!",
