@@ -195,8 +195,8 @@ class RequestsViewModel: NSObject {
                   let email = value["email"] as? String,
                   let latitude = value["latitude"] as? String,
                   let longitude = value["longitude"] as? String,
-                  let destinyLatitude = value["longitude"] as? String,
-                  let destinyLongitude = value["longitude"] as? String
+                  let destinyLatitude = value["destinyLatitude"] as? String,
+                  let destinyLongitude = value["destinyLongitude"] as? String
                     
             else {
                 print("❌ Campos obrigatórios faltando ou em formato errado em \(snapShot.key): \(value)")

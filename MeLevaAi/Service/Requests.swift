@@ -20,7 +20,9 @@ class Requests {
             "email": user.email,
             "nome": user.nome,
             "latitude": user.latitude,
-            "longitude": user.longitude
+            "longitude": user.longitude,
+            "destinyLatitude": user.destinyLatitude,
+            "destinyLongitude": user.destinyLongitude
         ]
         
         requests.child(requestId).setValue(data) { error, _ in
