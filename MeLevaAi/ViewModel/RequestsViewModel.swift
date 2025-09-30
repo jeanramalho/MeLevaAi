@@ -23,7 +23,7 @@ class RequestsViewModel: NSObject {
     public var driverLocation = CLLocationCoordinate2D()
     public var isCarCalled: Bool = false
     
-    
+    // Faz a requisição de uma carona
     public func requestACar(completion: @escaping(Bool) -> Void){
  
         print("Tentando chamar um carro")
@@ -63,7 +63,9 @@ class RequestsViewModel: NSObject {
             }
         }
     }
+
     
+    // Checa se já existe uma chamada de carona feita
     public func checkIfHaveRequests(completion: @escaping (Bool) -> Void) {
         
         let database = auth.database
@@ -104,6 +106,7 @@ class RequestsViewModel: NSObject {
         
     }
     
+    // Atualiza a requisição
     public func updatingRequest(completion: @escaping (Bool, Double?) -> Void){
         
         let database = auth.database
@@ -135,6 +138,7 @@ class RequestsViewModel: NSObject {
         }
     }
     
+    // Calcula a distancia entre motorista e passageiro
     private func calcuteDistanceDriverToPassenger() -> Double {
         
         let driverLatitude = self.driverLocation.latitude
@@ -153,6 +157,7 @@ class RequestsViewModel: NSObject {
         return distanceKM
     }
     
+    // Cancela uma carona solicitada
     public func cancellCarRequest(completion: @escaping (Bool) -> Void){
         
         guard let requestId = currentRequestId else {
@@ -170,6 +175,7 @@ class RequestsViewModel: NSObject {
         }
     }
     
+    // Resgata todas as solicitações feitas
     public func getRequests(completion: @escaping () -> Void){
         
         let database = auth.database
@@ -215,6 +221,17 @@ class RequestsViewModel: NSObject {
         }
     }
     
+    // Atualiza a lista de requisição caso o usuário cancele
+    public func updateRequestCaseCancell(completion: @escaping () -> Void){
+        
+        let database = auth.database
+        let requestsRef = database.child("requisicoes")
+        
+        requestsRef.observe(.childRemoved) { snapshot in
+            <#code#>
+        }
+    }
+    
     public func getARequest(at index: Int) -> UserRequestModel {
         return requestsList[index].model
     }
@@ -256,6 +273,7 @@ class RequestsViewModel: NSObject {
         }
     }
     
+    // Cria a anotação do motorista e do passageiro
     public func createDriverAndPassengerAnnotation(completion: @escaping (_ driverAnnotation: MKPointAnnotation?, _ passengerAnnotation: MKPointAnnotation?) -> Void) {
         
         let driverLatitude = self.driverLocation.latitude
