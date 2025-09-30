@@ -27,6 +27,12 @@ class DriverViewController: UIViewController {
         self.fetchRequests()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Remove observadores para evitar vazamentos de memória
+        self.viewModel.removeAllObservers()
+    }
+    
     private func setup(){
         
         self.title = "MeLevaAí - Motorista"
@@ -65,6 +71,20 @@ class DriverViewController: UIViewController {
                 self?.contenView.requestsTableView.reloadData()
             }
         })
+        
+        // Configura o observador para requisições canceladas
+        self.setupRequestCancellationObserver()
+    }
+    
+    // Configura o observador para detectar quando uma requisição é cancelada
+    private func setupRequestCancellationObserver() {
+        self.viewModel.updateRequestCaseCancell { [weak self] in
+            DispatchQueue.main.async {
+                // Atualiza a tableView quando uma requisição é cancelada
+                self?.contenView.requestsTableView.reloadData()
+                print("🔄 TableView atualizada após cancelamento de requisição")
+            }
+        }
     }
     
     private func setHierarchy(){

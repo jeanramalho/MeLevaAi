@@ -227,8 +227,28 @@ class RequestsViewModel: NSObject {
         let database = auth.database
         let requestsRef = database.child("requisicoes")
         
-        requestsRef.observe(.childRemoved) { snapshot in
-            <#code#>
+        // Observa quando uma requisição é removida do Firebase
+        requestsRef.observe(.childRemoved) { [weak self] snapShot in
+            
+            guard let self = self else { return }
+            
+            let removedRequestId = snapShot.key
+            print("🔄 Requisição removida: \(removedRequestId)")
+            
+            // Procura e remove a requisição da lista local usando o ID
+            if let indexToRemove = self.requestsList.firstIndex(where: { $0.id == removedRequestId }) {
+                
+                // Remove o item da lista local
+                self.requestsList.remove(at: indexToRemove)
+                print("✅ Requisição \(removedRequestId) removida da lista local")
+                
+                // Chama o completion para atualizar a UI
+                DispatchQueue.main.async {
+                    completion()
+                }
+            } else {
+                print("⚠️ Requisição \(removedRequestId) não encontrada na lista local")
+            }
         }
     }
     
@@ -242,6 +262,14 @@ class RequestsViewModel: NSObject {
     
     public func requestsCount() -> Int {
         return requestsList.count
+    }
+    
+    // Remove todos os observadores do Firebase para evitar vazamentos de memória
+    public func removeAllObservers() {
+        let database = auth.database
+        let requestsRef = database.child("requisicoes")
+        requestsRef.removeAllObservers()
+        print("🧹 Todos os observadores do Firebase foram removidos")
     }
     
     // Atualizar requisição confirmada
