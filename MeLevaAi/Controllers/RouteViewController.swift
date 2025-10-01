@@ -28,6 +28,10 @@ class RouteViewController: UIViewController {
     private var isRideInProgress: Bool = false
     private var locationUpdateTimer: Timer?
     
+    // MARK: - Propriedades para Anotações do Mapa
+    private var driverAnnotation: MKPointAnnotation?
+    private var passengerAnnotation: MKPointAnnotation?
+    
     
     init(driver: Driver, pessenger: UserRequestModel, requestId: String) {
         self.driver = driver
@@ -51,6 +55,8 @@ class RouteViewController: UIViewController {
         checkRequestStatusAndUpdateButton()
         // Inicia o monitoramento de localização em tempo real
         startLocationMonitoring()
+        // Configura as anotações iniciais do mapa
+        setupInitialMapAnnotations()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -102,12 +108,54 @@ class RouteViewController: UIViewController {
         let region = MKCoordinateRegion(center: passengerCoord, latitudinalMeters: 200, longitudinalMeters: 200)
         // mostra região do passageiro ao abrir o mapa
         map.setRegion(region, animated: true)
+    }
+    
+    // MARK: - Configuração de Anotações do Mapa
+    
+    /// Configura as anotações iniciais do motorista e passageiro no mapa
+    private func setupInitialMapAnnotations() {
         
-        // Mostrar nome do passageiro no mapa
-        let annotationPassegenger = MKPointAnnotation()
-        annotationPassegenger.coordinate = passengerCoord
-        annotationPassegenger.title = self.passenger.nome
-        map.addAnnotation(annotationPassegenger)
+        guard let passengerCoord = self.passenger.coordinate else { return }
+        
+        // Remove anotações existentes
+        contentView.routeMapView.removeAnnotations(contentView.routeMapView.annotations)
+        
+        // Cria anotação do passageiro
+        passengerAnnotation = MKPointAnnotation()
+        passengerAnnotation?.coordinate = passengerCoord
+        passengerAnnotation?.title = "Passageiro: \(self.passenger.nome)"
+        passengerAnnotation?.subtitle = "Destino: \(self.passenger.destinyCoordinate?.latitude ?? 0), \(self.passenger.destinyCoordinate?.longitude ?? 0)"
+        
+        // Cria anotação do motorista (será atualizada quando tivermos a localização)
+        driverAnnotation = MKPointAnnotation()
+        driverAnnotation?.title = "Motorista: \(self.driver.nome)"
+        driverAnnotation?.subtitle = "Você"
+        
+        // Adiciona anotações ao mapa
+        if let passengerAnnotation = passengerAnnotation {
+            contentView.routeMapView.addAnnotation(passengerAnnotation)
+        }
+        if let driverAnnotation = driverAnnotation {
+            contentView.routeMapView.addAnnotation(driverAnnotation)
+        }
+        
+        // Configura região inicial para mostrar ambos
+        let region = MKCoordinateRegion(center: passengerCoord, latitudinalMeters: 2000, longitudinalMeters: 2000)
+        contentView.routeMapView.setRegion(region, animated: true)
+        
+        print("📍 Anotações iniciais configuradas - Passageiro: \(passengerCoord)")
+    }
+    
+    /// Atualiza a posição do motorista no mapa em tempo real
+    private func updateDriverAnnotationLocation() {
+        
+        guard let driverLocation = currentDriverLocation,
+              let driverAnnotation = driverAnnotation else { return }
+        
+        // Atualiza a coordenada da anotação do motorista
+        driverAnnotation.coordinate = driverLocation
+        
+        print("🚗 Localização do motorista atualizada no mapa: \(driverLocation)")
     }
     
     // MARK: - Verificação e Atualização de Status da Requisição
@@ -198,6 +246,8 @@ class RouteViewController: UIViewController {
         requestViewModel.updateDriverLocationInRealTime(requestId: requestId, driverCoordinate: driverLocation) { success in
             if success {
                 print("✅ Localização do motorista atualizada no Firebase")
+                // Atualiza a anotação do motorista no mapa
+                self.updateDriverAnnotationLocation()
                 // Verifica proximidade com o passageiro
                 self.checkProximityToPassenger()
             } else {

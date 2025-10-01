@@ -27,6 +27,13 @@ class PessengerViewController: UIViewController {
         super.viewWillAppear(animated)
         self.checkIfCarIsRequested()
         self.updateMap()
+        self.setupRideCompletionObserver()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Remove observadores para evitar vazamentos de memória
+        self.requestViewModel.removeRideCompletionObserver()
     }
     
     
@@ -87,12 +94,13 @@ class PessengerViewController: UIViewController {
     
     private func updateMap(){
         
-        
+        // Só atualiza o mapa se a corrida foi aceita pelo motorista
         self.requestViewModel.updatingRequest {[weak self] success, distance in
             
-            guard let self = self, let realDistance = distance else {return}
+            guard let self = self else { return }
             
-            if success {
+            // Só procede se houve sucesso E há distância (corrida aceita)
+            if success, let realDistance = distance {
                 
                 DispatchQueue.main.async {
                     let callCarButton = self.contentView.callCarButton
@@ -105,6 +113,7 @@ class PessengerViewController: UIViewController {
                 }
                 
             }
+            // Se não há sucesso ou distância, mantém o estado atual (não muda nada)
         }
         
     }
@@ -292,6 +301,81 @@ class PessengerViewController: UIViewController {
                     
                 }
         }
+    }
+    
+    // MARK: - Observador de Finalização de Corrida
+    
+    /// Configura o observador para detectar quando a corrida é finalizada
+    private func setupRideCompletionObserver() {
+        
+        // Obtém o email do usuário logado
+        authService.getReqUserData { [weak self] user in
+            
+            guard let self = self,
+                  let user = user else { return }
+            
+            // Configura o observador para notificar quando a corrida for finalizada
+            self.requestViewModel.observeRideCompletion(passengerEmail: user.email) { [weak self] in
+                self?.handleRideCompletion()
+            }
+        }
+    }
+    
+    /// Manipula a finalização da corrida - reseta o estado do passageiro
+    private func handleRideCompletion() {
+        
+        print("🎉 Corrida finalizada! Resetando estado do passageiro...")
+        
+        // Reseta o estado visual
+        resetPassengerState()
+        
+        // Mostra alerta de corrida concluída
+        showRideCompletedAlert()
+    }
+    
+    /// Reseta o estado do passageiro para permitir nova corrida
+    private func resetPassengerState() {
+        
+        // Limpa o campo de destino
+        contentView.destinyLocationTextField.text = ""
+        
+        // Reseta o estado do motorista a caminho
+        driverOnTheWay = false
+        
+        // Remove todas as anotações do mapa
+        contentView.mapView.removeAnnotations(contentView.mapView.annotations)
+        
+        // Atualiza o botão para o estado inicial
+        updateCarCallButton()
+        
+        // Reseta a visualização do mapa para a localização atual
+        resetMapView()
+        
+        print("✅ Estado do passageiro resetado com sucesso")
+    }
+    
+    /// Reseta a visualização do mapa para a localização atual
+    private func resetMapView() {
+        
+        guard let currentLocation = viewModel.currentLocation else { return }
+        
+        let span = MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        let region = MKCoordinateRegion(center: currentLocation, span: span)
+        contentView.mapView.setRegion(region, animated: true)
+    }
+    
+    /// Mostra alerta de corrida concluída
+    private func showRideCompletedAlert() {
+        
+        let alert = UIAlertController(
+            title: "Corrida Concluída! 🎉",
+            message: "Sua corrida foi finalizada com sucesso! Você pode pedir uma nova corrida quando quiser.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        
+        present(alert, animated: true)
     }
     
 }

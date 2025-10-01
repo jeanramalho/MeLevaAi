@@ -108,7 +108,7 @@ class RequestsViewModel: NSObject {
         
     }
     
-    // Atualiza a requisição
+    // Atualiza a requisição - só mostra distância quando corrida for aceita
     public func updatingRequest(completion: @escaping (Bool, Double?) -> Void){
         
         let database = auth.database
@@ -124,12 +124,19 @@ class RequestsViewModel: NSObject {
             requestUser.observe(.childChanged) { snapshot in
                 
                 if let snapshoDict = snapshot.value as? [String: Any],
+                   let status = snapshoDict["status"] as? String,
                    let driverLatitude = snapshoDict["motoristaLatitude"] as? Double,
                    let driverLongitude = snapshoDict["motoristaLongitude"] as? Double
                 {
-                    self.driverLocation = CLLocationCoordinate2D(latitude: driverLatitude, longitude: driverLongitude)
-                    let distance = self.calcuteDistanceDriverToPassenger()
-                    completion(true, distance)
+                    // Só atualiza a distância se a corrida foi aceita pelo motorista
+                    if status == "aceita" {
+                        self.driverLocation = CLLocationCoordinate2D(latitude: driverLatitude, longitude: driverLongitude)
+                        let distance = self.calcuteDistanceDriverToPassenger()
+                        completion(true, distance)
+                    } else {
+                        // Se não foi aceita, não mostra distância
+                        completion(false, nil)
+                    }
                 } else {
                     completion(false, nil)
                 }
@@ -502,6 +509,47 @@ class RequestsViewModel: NSObject {
         updateDriverLocationInRealTime(requestId: requestId, driverCoordinate: driverCoordinate) { success in
             completion(success)
         }
+    }
+    
+    /// Observa quando uma corrida é finalizada para notificar o passageiro
+    /// - Parameters:
+    ///   - passengerEmail: Email do passageiro
+    ///   - completion: Callback chamado quando a corrida é finalizada
+    public func observeRideCompletion(passengerEmail: String, completion: @escaping () -> Void) {
+        
+        let database = self.auth.database
+        let requestsRef = database.child("requisicoes")
+        
+        // Observa mudanças nas requisições do passageiro
+        requestsRef.queryOrdered(byChild: "email").queryEqual(toValue: passengerEmail).observe(.childChanged) { [weak self] snapshot in
+            
+            guard let self = self,
+                  let value = snapshot.value as? [String: Any],
+                  let status = value["status"] as? String else {
+                return
+            }
+            
+            // Se o status mudou para "concluida", notifica o passageiro
+            if status == "concluida" {
+                print("🎉 Corrida finalizada para o passageiro: \(passengerEmail)")
+                
+                // Atualiza o estado local do passageiro
+                self.isCarCalled = false
+                self.currentRequestId = nil
+                
+                DispatchQueue.main.async {
+                    completion()
+                }
+            }
+        }
+    }
+    
+    /// Remove observadores de finalização de corrida
+    public func removeRideCompletionObserver() {
+        let database = self.auth.database
+        let requestsRef = database.child("requisicoes")
+        requestsRef.removeAllObservers()
+        print("🧹 Observadores de finalização de corrida removidos")
     }
 
 }
