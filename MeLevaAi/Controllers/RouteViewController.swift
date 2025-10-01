@@ -22,6 +22,12 @@ class RouteViewController: UIViewController {
     private let locationManager = CLLocationManager()
     private let requestId: String
     
+    // MARK: - Propriedades para Controle de Estado da Corrida
+    private var currentDriverLocation: CLLocationCoordinate2D?
+    private var isNearPassenger: Bool = false
+    private var isRideInProgress: Bool = false
+    private var locationUpdateTimer: Timer?
+    
     
     init(driver: Driver, pessenger: UserRequestModel, requestId: String) {
         self.driver = driver
@@ -43,6 +49,14 @@ class RouteViewController: UIViewController {
         super.viewWillAppear(animated)
         // Verifica o status da requisição e configura o botão adequadamente
         checkRequestStatusAndUpdateButton()
+        // Inicia o monitoramento de localização em tempo real
+        startLocationMonitoring()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Para o monitoramento de localização quando sair da tela
+        stopLocationMonitoring()
     }
     
     private func setup() {
@@ -96,7 +110,9 @@ class RouteViewController: UIViewController {
         map.addAnnotation(annotationPassegenger)
     }
     
-    // Verifica o status da requisição no Firebase e atualiza o botão adequadamente
+    // MARK: - Verificação e Atualização de Status da Requisição
+    
+    /// Verifica o status da requisição no Firebase e atualiza o botão adequadamente
     private func checkRequestStatusAndUpdateButton() {
         
         let database = Database.database().reference()
@@ -111,21 +127,109 @@ class RouteViewController: UIViewController {
             }
             
             DispatchQueue.main.async {
-                // Atualiza o botão baseado no status da requisição
-                if status == "aceita" {
-                    self.contentView.confirmRequestButton.setTitle("A Caminho do Passageiro", for: .normal)
+                self.updateButtonBasedOnStatus(status: status)
+            }
+        }
+    }
+    
+    /// Atualiza o botão baseado no status da requisição
+    /// - Parameter status: Status atual da requisição
+    private func updateButtonBasedOnStatus(status: String) {
+        
+        switch status {
+        case "pendente":
+            // Status inicial - motorista pode aceitar a corrida
+            contentView.confirmRequestButton.setTitle("Aceitar Corrida", for: .normal)
+            contentView.confirmRequestButton.backgroundColor = Colors.darkSecondary
+            contentView.confirmRequestButton.setTitleColor(Colors.defaultYellow, for: .normal)
+            contentView.confirmRequestButton.isEnabled = true
+            
+        case "aceita":
+            // Corrida aceita - motorista está a caminho do passageiro
+            contentView.confirmRequestButton.setTitle("A Caminho do Passageiro", for: .normal)
+            contentView.confirmRequestButton.backgroundColor = .systemGray3
+            contentView.confirmRequestButton.setTitleColor(.white, for: .normal)
+            contentView.confirmRequestButton.isEnabled = true
+            
+        case "em_andamento":
+            // Corrida em andamento - motorista está levando o passageiro ao destino
+            contentView.confirmRequestButton.setTitle("Finalizar Corrida", for: .normal)
+            contentView.confirmRequestButton.backgroundColor = .systemRed
+            contentView.confirmRequestButton.setTitleColor(.white, for: .normal)
+            contentView.confirmRequestButton.isEnabled = true
+            isRideInProgress = true
+            
+        case "concluida":
+            // Corrida concluída - botão desabilitado
+            contentView.confirmRequestButton.setTitle("Corrida Concluída", for: .normal)
+            contentView.confirmRequestButton.backgroundColor = .systemGreen
+            contentView.confirmRequestButton.setTitleColor(.white, for: .normal)
+            contentView.confirmRequestButton.isEnabled = false
+            
+        default:
+            // Status desconhecido - volta ao estado inicial
+            contentView.confirmRequestButton.setTitle("Aceitar Corrida", for: .normal)
+            contentView.confirmRequestButton.backgroundColor = Colors.darkSecondary
+            contentView.confirmRequestButton.setTitleColor(Colors.defaultYellow, for: .normal)
+            contentView.confirmRequestButton.isEnabled = true
+        }
+    }
+    
+    // MARK: - Monitoramento de Localização e Proximidade
+    
+    /// Inicia o monitoramento de localização em tempo real
+    private func startLocationMonitoring() {
+        // Timer para atualizar localização a cada 10 segundos
+        locationUpdateTimer = Timer.scheduledTimer(withTimeInterval: 10.0, repeats: true) { [weak self] _ in
+            self?.updateDriverLocationInFirebase()
+        }
+    }
+    
+    /// Para o monitoramento de localização
+    private func stopLocationMonitoring() {
+        locationUpdateTimer?.invalidate()
+        locationUpdateTimer = nil
+    }
+    
+    /// Atualiza a localização do motorista no Firebase
+    private func updateDriverLocationInFirebase() {
+        guard let driverLocation = currentDriverLocation else { return }
+        
+        requestViewModel.updateDriverLocationInRealTime(requestId: requestId, driverCoordinate: driverLocation) { success in
+            if success {
+                print("✅ Localização do motorista atualizada no Firebase")
+                // Verifica proximidade com o passageiro
+                self.checkProximityToPassenger()
+            } else {
+                print("❌ Erro ao atualizar localização do motorista")
+            }
+        }
+    }
+    
+    /// Verifica se o motorista está próximo do passageiro e atualiza o botão
+    private func checkProximityToPassenger() {
+        guard let driverLocation = currentDriverLocation,
+              let passengerLocation = passenger.coordinate else { return }
+        
+        let isNear = requestViewModel.isDriverNearPassenger(driverLocation: driverLocation, passengerLocation: passengerLocation)
+        
+        // Se a proximidade mudou, atualiza o botão
+        if isNear != isNearPassenger {
+            isNearPassenger = isNear
+            
+            DispatchQueue.main.async {
+                if isNear && !self.isRideInProgress {
+                    // Motorista chegou perto do passageiro - muda para "Iniciar Corrida"
+                    self.contentView.confirmRequestButton.setTitle("Iniciar Corrida", for: .normal)
+                    self.contentView.confirmRequestButton.backgroundColor = UIColor.systemGreen.withAlphaComponent(0.7)
                     self.contentView.confirmRequestButton.setTitleColor(.white, for: .normal)
-                    self.contentView.confirmRequestButton.backgroundColor = .systemGray3
-                    // Mantém o botão habilitado para permitir abrir o Maps novamente
-                    self.contentView.confirmRequestButton.isEnabled = true
-                } else {
-                    self.contentView.confirmRequestButton.setTitle("Confirmar Carona", for: .normal)
-                    self.contentView.confirmRequestButton.backgroundColor = Colors.darkSecondary
-                    self.contentView.confirmRequestButton.isEnabled = true
+                    print("🎯 Motorista próximo do passageiro - botão atualizado para 'Iniciar Corrida'")
                 }
             }
         }
     }
+    
+    // MARK: - Navegação e Rotas
     
     // Abre o Maps com a rota para o passageiro
     private func openMapsWithRoute() {
@@ -159,50 +263,201 @@ class RouteViewController: UIViewController {
         }
     }
     
-    // Quando o motorista clica em "Confirmar Carona" ou "Corrida Aceita"
-    @objc private func didTapConfirmRequest() {
+    /// Abre o Maps com rota para o destino da corrida
+    private func openMapsWithDestinationRoute() {
         
-        // Verifica se a corrida já foi aceita
-        if self.contentView.confirmRequestButton.title(for: .normal) == "Corrida Aceita" {
-            // Se já foi aceita, apenas abre o Maps
-            self.openMapsWithRoute()
+        guard let destinationCoord = passenger.destinyCoordinate else {
+            print("❌ Coordenadas do destino não disponíveis")
             return
         }
         
-        // Se ainda não foi aceita, aceita a corrida primeiro
-        guard let driverCoordinate = self.driver.coordinate else {return}
+        let destinationCLL = CLLocation(latitude: destinationCoord.latitude, longitude: destinationCoord.longitude)
         
-        // Aceita corrida enviando dados do motorista para o firebase
-        self.requestViewModel.updateConfirmedRequest(passengerEmail: self.passenger.email, driverCoordinate: driverCoordinate) { [weak self] success in
+        CLGeocoder().reverseGeocodeLocation(destinationCLL) { [weak self] placemarks, error in
             
-            guard let self = self else {return}
+            guard let self = self else { return }
+            
+            if let error = error {
+                print("❌ Erro ao obter endereço do destino: \(error.localizedDescription)")
+                return
+            }
+            
+            if let placemark = placemarks?.first {
+                let mkPlacemark = MKPlacemark(placemark: placemark)
+                let mapItem = MKMapItem(placemark: mkPlacemark)
+                mapItem.name = "Destino - \(self.passenger.nome)"
+                
+                // Define opções de navegação para o destino
+                let options = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving]
+                mapItem.openInMaps(launchOptions: options)
+                
+                print("🗺️ Maps aberto com rota para o destino")
+            }
+        }
+    }
+    
+    // MARK: - Ações do Botão
+    
+    /// Ação principal do botão - gerencia diferentes estados da corrida
+    @objc private func didTapConfirmRequest() {
+        
+        let buttonTitle = contentView.confirmRequestButton.title(for: .normal) ?? ""
+        
+        switch buttonTitle {
+        case "Aceitar Corrida":
+            // Primeira ação - aceitar a corrida
+            acceptRide()
+            
+        case "A Caminho do Passageiro":
+            // Motorista está indo buscar o passageiro - abre Maps
+            openMapsWithRoute()
+            
+        case "Iniciar Corrida":
+            // Motorista chegou perto do passageiro - inicia a corrida
+            startRide()
+            
+        case "Finalizar Corrida":
+            // Motorista chegou ao destino - finaliza a corrida
+            finishRide()
+            
+        default:
+            print("⚠️ Estado do botão não reconhecido: \(buttonTitle)")
+        }
+    }
+    
+    /// Aceita a corrida e atualiza o status
+    private func acceptRide() {
+        guard let driverCoordinate = driver.coordinate else {
+            print("❌ Coordenadas do motorista não disponíveis")
+            return
+        }
+        
+        requestViewModel.updateConfirmedRequest(passengerEmail: passenger.email, driverCoordinate: driverCoordinate) { [weak self] success in
+            
+            guard let self = self else { return }
             
             if success {
-                
-                // Atualiza o botão para mostrar que a corrida foi aceita
-                self.contentView.confirmRequestButton.setTitle("Corrida Aceita", for: .normal)
-                self.contentView.confirmRequestButton.backgroundColor = .systemRed
-                // Mantém o botão habilitado para permitir abrir o Maps novamente
-                self.contentView.confirmRequestButton.isEnabled = true
-                
-                // Abre o Maps com a rota para o passageiro
-                self.openMapsWithRoute()
-                
+                DispatchQueue.main.async {
+                    // Atualiza o botão para mostrar que está a caminho
+                    self.contentView.confirmRequestButton.setTitle("A Caminho do Passageiro", for: .normal)
+                    self.contentView.confirmRequestButton.backgroundColor = .systemGray3
+                    self.contentView.confirmRequestButton.setTitleColor(.white, for: .normal)
+                    
+                    // Abre o Maps com a rota para o passageiro
+                    self.openMapsWithRoute()
+                }
+                print("✅ Corrida aceita com sucesso")
             } else {
                 print("❌ Erro ao aceitar corrida")
             }
         }
     }
+    
+    /// Inicia a corrida (muda status para "em_andamento")
+    private func startRide() {
+        requestViewModel.startRide(requestId: requestId) { [weak self] success in
+            
+            guard let self = self else { return }
+            
+            if success {
+                DispatchQueue.main.async {
+                    // Atualiza o botão para mostrar que está em andamento
+                    self.contentView.confirmRequestButton.setTitle("Finalizar Corrida", for: .normal)
+                    self.contentView.confirmRequestButton.backgroundColor = .systemRed
+                    self.contentView.confirmRequestButton.setTitleColor(.white, for: .normal)
+                    self.isRideInProgress = true
+                    
+                    // Abre o Maps com rota para o destino
+                    self.openMapsWithDestinationRoute()
+                }
+                print("🚗 Corrida iniciada - rota para destino aberta")
+            } else {
+                print("❌ Erro ao iniciar corrida")
+            }
+        }
+    }
+    
+    /// Finaliza a corrida e salva no histórico
+    private func finishRide() {
+        
+        // Prepara dados da corrida para salvar no histórico
+        let rideData: [String: Any] = [
+            "passageiroNome": passenger.nome,
+            "passageiroEmail": passenger.email,
+            "origemLatitude": passenger.latitude,
+            "origemLongitude": passenger.longitude,
+            "destinoLatitude": passenger.destinyLatitude,
+            "destinoLongitude": passenger.destinyLongitude,
+            "motoristaNome": driver.nome,
+            "motoristaEmail": driver.email,
+            "status": "concluida"
+        ]
+        
+        requestViewModel.finishRide(requestId: requestId, driverEmail: driver.email, rideData: rideData) { [weak self] success in
+            
+            guard let self = self else { return }
+            
+            if success {
+                DispatchQueue.main.async {
+                    // Atualiza o botão para mostrar que foi concluída
+                    self.contentView.confirmRequestButton.setTitle("Corrida Concluída", for: .normal)
+                    self.contentView.confirmRequestButton.backgroundColor = .systemGreen
+                    self.contentView.confirmRequestButton.setTitleColor(.white, for: .normal)
+                    self.contentView.confirmRequestButton.isEnabled = false
+                    
+                    // Para o monitoramento de localização
+                    self.stopLocationMonitoring()
+                    
+                    // Mostra alerta de sucesso
+                    self.showRideCompletedAlert()
+                }
+                print("✅ Corrida finalizada e salva no histórico")
+            } else {
+                print("❌ Erro ao finalizar corrida")
+            }
+        }
+    }
+    
+    /// Mostra alerta de corrida concluída
+    private func showRideCompletedAlert() {
+        let alert = UIAlertController(
+            title: "Corrida Concluída! 🎉",
+            message: "A corrida foi finalizada com sucesso e salva no seu histórico.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { [weak self] _ in
+            // Volta para a tela anterior
+            self?.navigationController?.popViewController(animated: true)
+        })
+        
+        present(alert, animated: true)
+    }
 }
 
 // MARK: – CLLocationManagerDelegate
 extension RouteViewController: CLLocationManagerDelegate {
+    
+    /// Atualiza a localização atual do motorista
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else { return }
         
+        // Atualiza a localização atual do motorista
+        currentDriverLocation = location.coordinate
+        
+        // Atualiza a localização no Firebase se necessário
+        updateDriverLocationInFirebase()
+        
+        print("📍 Localização do motorista atualizada: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+    }
+    
+    /// Trata erros de localização
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("❌ Erro ao obter localização: \(error.localizedDescription)")
     }
 }
 
-// MARK: –– MKMapViewDelegate
+// MARK: – MKMapViewDelegate
 extension RouteViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
         if let polyline = overlay as? MKPolyline {

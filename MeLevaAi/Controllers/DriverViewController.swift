@@ -174,10 +174,23 @@ extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
 
 extension DriverViewController: CLLocationManagerDelegate {
     
+    /// Atualiza a localização do motorista e recarrega a tabela de requisições
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let loc = locations.last else {return}
-        self.driverLocation = loc.coordinate
+        guard let location = locations.last else { return }
         
-        contenView.requestsTableView.reloadData()
+        // Atualiza a localização atual do motorista
+        self.driverLocation = location.coordinate
+        
+        // Recarrega a tabela para mostrar distâncias atualizadas
+        DispatchQueue.main.async {
+            self.contenView.requestsTableView.reloadData()
+        }
+        
+        print("📍 Localização do motorista atualizada: \(location.coordinate.latitude), \(location.coordinate.longitude)")
+    }
+    
+    /// Trata erros de localização
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("❌ Erro ao obter localização do motorista: \(error.localizedDescription)")
     }
 }

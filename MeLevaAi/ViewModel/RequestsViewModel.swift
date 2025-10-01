@@ -356,6 +356,154 @@ class RequestsViewModel: NSObject {
     
 }
 
+    // MARK: - Métodos para Gerenciamento de Corridas
+    
+    /// Atualiza a localização do motorista em tempo real no Firebase
+    /// - Parameters:
+    ///   - requestId: ID da requisição
+    ///   - driverCoordinate: Coordenadas atuais do motorista
+    ///   - completion: Callback com resultado da operação
+    public func updateDriverLocationInRealTime(requestId: String, driverCoordinate: CLLocationCoordinate2D, completion: @escaping (Bool) -> Void) {
+        
+        let database = auth.database
+        let requestRef = database.child("requisicoes").child(requestId)
+        
+        let locationData: [String: Any] = [
+            "motoristaLatitude": driverCoordinate.latitude,
+            "motoristaLongitude": driverCoordinate.longitude,
+            "ultimaAtualizacao": ServerValue.timestamp()
+        ]
+        
+        requestRef.updateChildValues(locationData) { error, _ in
+            if let error = error {
+                print("❌ Erro ao atualizar localização do motorista: \(error.localizedDescription)")
+                completion(false)
+            } else {
+                print("✅ Localização do motorista atualizada com sucesso")
+                completion(true)
+            }
+        }
+    }
+    
+    /// Calcula a distância entre o motorista e o passageiro
+    /// - Parameters:
+    ///   - driverLocation: Localização atual do motorista
+    ///   - passengerLocation: Localização do passageiro
+    /// - Returns: Distância em metros
+    public func calculateDistanceBetweenDriverAndPassenger(driverLocation: CLLocationCoordinate2D, passengerLocation: CLLocationCoordinate2D) -> Double {
+        
+        let driverCLLocation = CLLocation(latitude: driverLocation.latitude, longitude: driverLocation.longitude)
+        let passengerCLLocation = CLLocation(latitude: passengerLocation.latitude, longitude: passengerLocation.longitude)
+        
+        return driverCLLocation.distance(from: passengerCLLocation)
+    }
+    
+    /// Verifica se o motorista está próximo do passageiro (dentro de 100 metros)
+    /// - Parameters:
+    ///   - driverLocation: Localização atual do motorista
+    ///   - passengerLocation: Localização do passageiro
+    /// - Returns: True se estiver próximo, False caso contrário
+    public func isDriverNearPassenger(driverLocation: CLLocationCoordinate2D, passengerLocation: CLLocationCoordinate2D) -> Bool {
+        
+        let distance = calculateDistanceBetweenDriverAndPassenger(driverLocation: driverLocation, passengerLocation: passengerLocation)
+        return distance <= 100.0 // 100 metros de proximidade
+    }
+    
+    /// Atualiza o status da requisição no Firebase
+    /// - Parameters:
+    ///   - requestId: ID da requisição
+    ///   - newStatus: Novo status da corrida
+    ///   - completion: Callback com resultado da operação
+    public func updateRequestStatus(requestId: String, newStatus: String, completion: @escaping (Bool) -> Void) {
+        
+        let database = auth.database
+        let requestRef = database.child("requisicoes").child(requestId)
+        
+        let statusData: [String: Any] = [
+            "status": newStatus,
+            "statusAtualizadoEm": ServerValue.timestamp()
+        ]
+        
+        requestRef.updateChildValues(statusData) { error, _ in
+            if let error = error {
+                print("❌ Erro ao atualizar status da requisição: \(error.localizedDescription)")
+                completion(false)
+            } else {
+                print("✅ Status da requisição atualizado para: \(newStatus)")
+                completion(true)
+            }
+        }
+    }
+    
+    /// Inicia uma corrida (muda status para "em_andamento")
+    /// - Parameters:
+    ///   - requestId: ID da requisição
+    ///   - completion: Callback com resultado da operação
+    public func startRide(requestId: String, completion: @escaping (Bool) -> Void) {
+        
+        updateRequestStatus(requestId: requestId, newStatus: "em_andamento") { success in
+            completion(success)
+        }
+    }
+    
+    /// Finaliza uma corrida e salva no histórico do motorista
+    /// - Parameters:
+    ///   - requestId: ID da requisição
+    ///   - driverEmail: Email do motorista
+    ///   - rideData: Dados da corrida concluída
+    ///   - completion: Callback com resultado da operação
+    public func finishRide(requestId: String, driverEmail: String, rideData: [String: Any], completion: @escaping (Bool) -> Void) {
+        
+        let database = auth.database
+        
+        // Primeiro, salva a corrida no histórico do motorista
+        let driverHistoryRef = database.child("motoristas").child(driverEmail.replacingOccurrences(of: ".", with: "_")).child("corridasConcluidas")
+        let rideId = driverHistoryRef.childByAutoId().key ?? UUID().uuidString
+        
+        var rideDataWithTimestamp = rideData
+        rideDataWithTimestamp["concluidaEm"] = ServerValue.timestamp()
+        rideDataWithTimestamp["rideId"] = rideId
+        
+        driverHistoryRef.child(rideId).setValue(rideDataWithTimestamp) { error, _ in
+            if let error = error {
+                print("❌ Erro ao salvar corrida no histórico: \(error.localizedDescription)")
+                completion(false)
+                return
+            }
+            
+            // Se salvou no histórico, atualiza o status e remove da lista de requisições
+            self.updateRequestStatus(requestId: requestId, newStatus: "concluida") { statusSuccess in
+                if statusSuccess {
+                    // Remove a requisição da lista ativa
+                    self.requestService.deleteRequest(with: requestId) { deleteSuccess in
+                        if deleteSuccess {
+                            print("✅ Corrida finalizada e salva no histórico com sucesso")
+                            completion(true)
+                        } else {
+                            print("⚠️ Corrida salva no histórico, mas erro ao remover da lista de requisições")
+                            completion(false)
+                        }
+                    }
+                } else {
+                    print("❌ Erro ao atualizar status da corrida")
+                    completion(false)
+                }
+            }
+        }
+    }
+    
+    /// Observa mudanças na localização do motorista para atualizar em tempo real
+    /// - Parameters:
+    ///   - requestId: ID da requisição
+    ///   - driverCoordinate: Coordenadas atuais do motorista
+    ///   - completion: Callback chamado quando a localização é atualizada
+    public func observeDriverLocationUpdates(requestId: String, driverCoordinate: CLLocationCoordinate2D, completion: @escaping (Bool) -> Void) {
+        
+        updateDriverLocationInRealTime(requestId: requestId, driverCoordinate: driverCoordinate) { success in
+            completion(success)
+        }
+    }
+
 extension RequestsViewModel: CLLocationManagerDelegate {
     
 }

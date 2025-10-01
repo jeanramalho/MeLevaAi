@@ -19,7 +19,7 @@ class RouteView: UIView {
     lazy var confirmRequestButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle("Confirmar Carona", for: .normal)
+        button.setTitle("Aceitar Corrida", for: .normal)
         button.backgroundColor = Colors.darkSecondary
         button.setTitleColor(Colors.defaultYellow, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 24, weight: .bold)
