@@ -22,7 +22,8 @@ class Requests {
             "latitude": user.latitude,
             "longitude": user.longitude,
             "destinyLatitude": user.destinyLatitude,
-            "destinyLongitude": user.destinyLongitude
+            "destinyLongitude": user.destinyLongitude,
+            "status": user.status
         ]
         
         requests.child(requestId).setValue(data) { error, _ in

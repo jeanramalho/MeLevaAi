@@ -33,6 +33,12 @@ class DriverViewController: UIViewController {
         self.viewModel.removeAllObservers()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        // Limpa a lista de requisições quando a view desaparece para evitar inconsistências
+        self.viewModel.clearRequestsList()
+    }
+    
     private func setup(){
         
         self.title = "MeLevaAí - Motorista"
@@ -119,7 +125,11 @@ extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
         
         guard let cell = tableView.dequeueReusableCell(withIdentifier: RequestTableViewCell.identifier, for: indexPath) as? RequestTableViewCell else {return UITableViewCell()}
         
-        let request = self.viewModel.getARequest(at: indexPath.row)
+        // Verifica se consegue obter a requisição de forma segura
+        guard let request = self.viewModel.getARequest(at: indexPath.row) else {
+            print("⚠️ Não foi possível obter requisição no índice \(indexPath.row)")
+            return cell
+        }
         
         cell.configure(with: request, driverLocation: driverLocation)
         
@@ -128,10 +138,13 @@ extension DriverViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
        
-        // Pega dados da request e retorna em um Model de UserRequestModel
-        let passenger = self.viewModel.getARequest(at: indexPath.row)
-        // Pega o requestId do nó da requisição no firebase
-        let requestId = self.viewModel.getRequestId(at: indexPath.row)
+        // Verifica se consegue obter os dados da requisição de forma segura
+        guard let passenger = self.viewModel.getARequest(at: indexPath.row),
+              let requestId = self.viewModel.getRequestId(at: indexPath.row) else {
+            print("⚠️ Não foi possível obter dados da requisição no índice \(indexPath.row)")
+            return
+        }
+        
         // Pega os dados do motorista e instancia o model Driver
         self.authService.getReqUserData { [weak self] user in
             guard

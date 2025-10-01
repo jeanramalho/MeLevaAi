@@ -14,6 +14,7 @@ struct UserRequestModel {
     var longitude: String
     var destinyLatitude: String
     var destinyLongitude: String
+    var status: String // Status da corrida: "pendente", "aceita", "em_andamento"
     
     // converte as strings das coordenadas para CLLocationCoordinate2D
     var coordinate: CLLocationCoordinate2D? {

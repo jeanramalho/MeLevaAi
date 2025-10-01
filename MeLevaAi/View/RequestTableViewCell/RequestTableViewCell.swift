@@ -24,6 +24,14 @@ class RequestTableViewCell: UITableViewCell {
         return label
     }()
     
+    lazy var statusLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+        label.textColor = .systemBlue
+        return label
+    }()
+    
     
     static let identifier: String = "RequestTableViewCell"
     
@@ -45,6 +53,7 @@ class RequestTableViewCell: UITableViewCell {
     private func setHierarchy(){
         addSubview(passengerNameLabel)
         addSubview(distanceLabel)
+        addSubview(statusLabel)
     }
     
     private func setConstraints(){
@@ -54,14 +63,32 @@ class RequestTableViewCell: UITableViewCell {
             
             distanceLabel.topAnchor.constraint(equalTo: passengerNameLabel.bottomAnchor, constant: 4),
             distanceLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
-            distanceLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
+            
+            statusLabel.topAnchor.constraint(equalTo: distanceLabel.bottomAnchor, constant: 4),
+            statusLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 10),
+            statusLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
         ])
     }
     
     public func configure(with model: UserRequestModel, driverLocation: CLLocationCoordinate2D?){
         
+        // Configura o nome do passageiro
         passengerNameLabel.text = model.nome
         
+        // Configura o status da corrida
+        switch model.status {
+        case "aceita":
+            statusLabel.text = "EM ANDAMENTO"
+            statusLabel.textColor = .systemGreen
+        case "pendente":
+            statusLabel.text = "AGUARDANDO"
+            statusLabel.textColor = .systemOrange
+        default:
+            statusLabel.text = "AGUARDANDO"
+            statusLabel.textColor = .systemOrange
+        }
+        
+        // Calcula e exibe a distância
         guard let passengerCoord = model.coordinate,
               let driverCoord = driverLocation
         else {
@@ -74,7 +101,6 @@ class RequestTableViewCell: UITableViewCell {
         
         let distanceMeters = driverLoc.distance(from: passengerLoc)
         let distanceKm = distanceMeters / 1000
-        
         
         distanceLabel.text = String(format: "%.2f Km de distância", distanceKm)
     }

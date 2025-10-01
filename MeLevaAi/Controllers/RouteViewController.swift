@@ -22,6 +22,7 @@ class RouteViewController: UIViewController {
     private let locationManager = CLLocationManager()
     private let requestId: String
     
+    
     init(driver: Driver, pessenger: UserRequestModel, requestId: String) {
         self.driver = driver
         self.passenger = pessenger
@@ -36,6 +37,12 @@ class RouteViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        // Verifica o status da requisição e configura o botão adequadamente
+        checkRequestStatusAndUpdateButton()
     }
     
     private func setup() {
@@ -89,12 +96,80 @@ class RouteViewController: UIViewController {
         map.addAnnotation(annotationPassegenger)
     }
     
+    // Verifica o status da requisição no Firebase e atualiza o botão adequadamente
+    private func checkRequestStatusAndUpdateButton() {
+        
+        let database = Database.database().reference()
+        let requestRef = database.child("requisicoes").child(requestId)
+        
+        requestRef.observeSingleEvent(of: .value) { [weak self] snapshot in
+            
+            guard let self = self,
+                  let value = snapshot.value as? [String: Any],
+                  let status = value["status"] as? String else {
+                return
+            }
+            
+            DispatchQueue.main.async {
+                // Atualiza o botão baseado no status da requisição
+                if status == "aceita" {
+                    self.contentView.confirmRequestButton.setTitle("Corrida Aceita", for: .normal)
+                    self.contentView.confirmRequestButton.backgroundColor = .systemRed
+                    // Mantém o botão habilitado para permitir abrir o Maps novamente
+                    self.contentView.confirmRequestButton.isEnabled = true
+                } else {
+                    self.contentView.confirmRequestButton.setTitle("Confirmar Carona", for: .normal)
+                    self.contentView.confirmRequestButton.backgroundColor = Colors.darkSecondary
+                    self.contentView.confirmRequestButton.isEnabled = true
+                }
+            }
+        }
+    }
     
-    // Quando o motorista clica em "Confirmar Carona"
+    // Abre o Maps com a rota para o passageiro
+    private func openMapsWithRoute() {
+        
+        // Cria uma instancia CLLocation com as coordenadas do passageiro
+        guard let passengerLati = self.passenger.coordinate?.latitude as? Double else {return}
+        guard let passengerLong = self.passenger.coordinate?.longitude as? Double else {return}
+        
+        let passengerCLL = CLLocation(latitude: passengerLati, longitude: passengerLong)
+        
+        CLGeocoder().reverseGeocodeLocation(passengerCLL) { local, error in
+            
+            if let error = error {
+                
+                print("Impossível criar trajeto: \(error.localizedDescription)")
+                
+            } else {
+                
+                if let localData = local?.first {
+                    let placeMark = MKPlacemark(placemark: localData)
+                    let mapItem = MKMapItem(placemark: placeMark)
+                    mapItem.name = self.passenger.nome
+                    
+                    // Define opções de como o trajeto será feito - no caso do app será dirigindo
+                    let options = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving]
+                    // Abre rota no maps
+                    mapItem.openInMaps(launchOptions: options)
+                }
+                
+            }
+        }
+    }
+    
+    // Quando o motorista clica em "Confirmar Carona" ou "Corrida Aceita"
     @objc private func didTapConfirmRequest() {
         
-        guard let driverCoordinate = self.driver.coordinate else {return}
+        // Verifica se a corrida já foi aceita
+        if self.contentView.confirmRequestButton.title(for: .normal) == "Corrida Aceita" {
+            // Se já foi aceita, apenas abre o Maps
+            self.openMapsWithRoute()
+            return
+        }
         
+        // Se ainda não foi aceita, aceita a corrida primeiro
+        guard let driverCoordinate = self.driver.coordinate else {return}
         
         // Aceita corrida enviando dados do motorista para o firebase
         self.requestViewModel.updateConfirmedRequest(passengerEmail: self.passenger.email, driverCoordinate: driverCoordinate) { [weak self] success in
@@ -103,42 +178,19 @@ class RouteViewController: UIViewController {
             
             if success {
                 
-                //MARK: Exibi o caminho do passageiro no mapa
+                // Atualiza o botão para mostrar que a corrida foi aceita
+                self.contentView.confirmRequestButton.setTitle("Corrida Aceita", for: .normal)
+                self.contentView.confirmRequestButton.backgroundColor = .systemRed
+                // Mantém o botão habilitado para permitir abrir o Maps novamente
+                self.contentView.confirmRequestButton.isEnabled = true
                 
-                // Cria uma instancia CLLocation com as coordenadas do passageiro
-                guard let passengerLati = self.passenger.coordinate?.latitude as? Double else {return}
-                guard let passengerLong = self.passenger.coordinate?.longitude as? Double else {return}
-                
-                let passengerCLL = CLLocation(latitude: passengerLati, longitude: passengerLong)
-                
-                CLGeocoder().reverseGeocodeLocation(passengerCLL) { local, error in
-                    
-                    if let error = error {
-                        
-                        print("Impossível criar trajeto: \(error.localizedDescription)")
-                        
-                    } else {
-                        
-                        if let localData = local?.first {
-                            let placeMark = MKPlacemark(placemark: localData)
-                            let mapItem = MKMapItem(placemark: placeMark)
-                            mapItem.name = self.passenger.nome
-                            
-                            // Define opções de como o trajeto será feito - no caso do app será dirigindo
-                            let options = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving]
-                            // Abre rota no maps
-                            mapItem.openInMaps(launchOptions: options)
-                        }
-                        
-                    }
-                }
+                // Abre o Maps com a rota para o passageiro
+                self.openMapsWithRoute()
                 
             } else {
-                
+                print("❌ Erro ao aceitar corrida")
             }
         }
-        
-        
     }
 }
 

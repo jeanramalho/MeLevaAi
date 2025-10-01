@@ -47,7 +47,8 @@ class RequestsViewModel: NSObject {
                                                                  latitude: userLatitude,
                                                                  longitude: userLongitude,
                                                                  destinyLatitude: destinyLatitude,
-                                                                 destinyLongitude: destinyLongitude   )
+                                                                 destinyLongitude: destinyLongitude,
+                                                                 status: "pendente")
             
             self.requestService.createRequest(user: reqUserData) { success, requestId in
                 if success, let requestId = requestId {
@@ -183,6 +184,9 @@ class RequestsViewModel: NSObject {
         
         requestsRef.removeAllObservers()
         
+        // Limpa a lista local para evitar duplicações
+        self.requestsList.removeAll()
+        
         requestsRef.observe(.childAdded) { snapShot in
             
             print("–– snapshot.key:\n", snapShot.key)
@@ -209,12 +213,16 @@ class RequestsViewModel: NSObject {
                 return
             }
             
+            // Pega o status da requisição, se não existir assume "pendente"
+            let status = value["status"] as? String ?? "pendente"
+            
             let model = UserRequestModel(email: email,
                                            nome: nome,
                                            latitude: latitude,
                                            longitude: longitude,
                                            destinyLatitude: destinyLatitude,
-                                           destinyLongitude: destinyLongitude )
+                                           destinyLongitude: destinyLongitude,
+                                           status: status)
             
             self.requestsList.append((model: model, id: requestId))
             completion()
@@ -242,7 +250,7 @@ class RequestsViewModel: NSObject {
                 self.requestsList.remove(at: indexToRemove)
                 print("✅ Requisição \(removedRequestId) removida da lista local")
                 
-                // Chama o completion para atualizar a UI
+                // Chama o completion para atualizar a UI na thread principal
                 DispatchQueue.main.async {
                     completion()
                 }
@@ -252,11 +260,21 @@ class RequestsViewModel: NSObject {
         }
     }
     
-    public func getARequest(at index: Int) -> UserRequestModel {
+    public func getARequest(at index: Int) -> UserRequestModel? {
+        // Verifica se o índice é válido antes de acessar o array
+        guard index >= 0 && index < requestsList.count else {
+            print("⚠️ Índice \(index) inválido para array com \(requestsList.count) elementos")
+            return nil
+        }
         return requestsList[index].model
     }
     
-    public func getRequestId(at index: Int) -> String {
+    public func getRequestId(at index: Int) -> String? {
+        // Verifica se o índice é válido antes de acessar o array
+        guard index >= 0 && index < requestsList.count else {
+            print("⚠️ Índice \(index) inválido para array com \(requestsList.count) elementos")
+            return nil
+        }
         return requestsList[index].id
     }
     
@@ -272,6 +290,14 @@ class RequestsViewModel: NSObject {
         print("🧹 Todos os observadores do Firebase foram removidos")
     }
     
+    // Limpa a lista de requisições de forma segura
+    public func clearRequestsList() {
+        DispatchQueue.main.async {
+            self.requestsList.removeAll()
+            print("🧹 Lista de requisições limpa")
+        }
+    }
+    
     // Atualizar requisição confirmada
     public func updateConfirmedRequest(passengerEmail: String, driverCoordinate: CLLocationCoordinate2D, completion: @escaping (Bool) -> Void){
         
@@ -283,7 +309,8 @@ class RequestsViewModel: NSObject {
             
             let driverData: [String: Any] = [
                 "motoristaLatitude": driverCoordinate.latitude,
-                "motoristaLongitude": driverCoordinate.longitude
+                "motoristaLongitude": driverCoordinate.longitude,
+                "status": "aceita"
            ]
             
             snapshot.ref.updateChildValues(driverData) { error, _ in
