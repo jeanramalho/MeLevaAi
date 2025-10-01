@@ -113,8 +113,9 @@ class RouteViewController: UIViewController {
             DispatchQueue.main.async {
                 // Atualiza o botão baseado no status da requisição
                 if status == "aceita" {
-                    self.contentView.confirmRequestButton.setTitle("Corrida Aceita", for: .normal)
-                    self.contentView.confirmRequestButton.backgroundColor = .systemRed
+                    self.contentView.confirmRequestButton.setTitle("A Caminho do Passageiro", for: .normal)
+                    self.contentView.confirmRequestButton.setTitleColor(.white, for: .normal)
+                    self.contentView.confirmRequestButton.backgroundColor = .systemGray3
                     // Mantém o botão habilitado para permitir abrir o Maps novamente
                     self.contentView.confirmRequestButton.isEnabled = true
                 } else {
