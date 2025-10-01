@@ -8,6 +8,7 @@ import Foundation
 import UIKit
 import MapKit
 import CoreLocation
+import FirebaseDatabase
 
 
 
@@ -86,7 +87,7 @@ class RequestsViewModel: NSObject {
                 .queryEqual(toValue: email)
                 .observeSingleEvent(of: .childAdded) { snapshot in
                     
-                    if let snapshotDict = snapshot.value as? [String: Any] {
+                    if snapshot.value is [String: Any] {
                         
                         self.isCarCalled = true
                         self.currentRequestId = snapshot.key
@@ -353,9 +354,6 @@ class RequestsViewModel: NSObject {
         completion(driverAnnotation, passengerAnnotation)
     }
     
-    
-}
-
     // MARK: - Métodos para Gerenciamento de Corridas
     
     /// Atualiza a localização do motorista em tempo real no Firebase
@@ -365,7 +363,7 @@ class RequestsViewModel: NSObject {
     ///   - completion: Callback com resultado da operação
     public func updateDriverLocationInRealTime(requestId: String, driverCoordinate: CLLocationCoordinate2D, completion: @escaping (Bool) -> Void) {
         
-        let database = auth.database
+        let database = self.auth.database
         let requestRef = database.child("requisicoes").child(requestId)
         
         let locationData: [String: Any] = [
@@ -416,7 +414,7 @@ class RequestsViewModel: NSObject {
     ///   - completion: Callback com resultado da operação
     public func updateRequestStatus(requestId: String, newStatus: String, completion: @escaping (Bool) -> Void) {
         
-        let database = auth.database
+        let database = self.auth.database
         let requestRef = database.child("requisicoes").child(requestId)
         
         let statusData: [String: Any] = [
@@ -454,7 +452,7 @@ class RequestsViewModel: NSObject {
     ///   - completion: Callback com resultado da operação
     public func finishRide(requestId: String, driverEmail: String, rideData: [String: Any], completion: @escaping (Bool) -> Void) {
         
-        let database = auth.database
+        let database = self.auth.database
         
         // Primeiro, salva a corrida no histórico do motorista
         let driverHistoryRef = database.child("motoristas").child(driverEmail.replacingOccurrences(of: ".", with: "_")).child("corridasConcluidas")
@@ -464,7 +462,9 @@ class RequestsViewModel: NSObject {
         rideDataWithTimestamp["concluidaEm"] = ServerValue.timestamp()
         rideDataWithTimestamp["rideId"] = rideId
         
-        driverHistoryRef.child(rideId).setValue(rideDataWithTimestamp) { error, _ in
+        driverHistoryRef.child(rideId).setValue(rideDataWithTimestamp) { [weak self] error, _ in
+            guard let self = self else { return }
+            
             if let error = error {
                 print("❌ Erro ao salvar corrida no histórico: \(error.localizedDescription)")
                 completion(false)
@@ -503,6 +503,8 @@ class RequestsViewModel: NSObject {
             completion(success)
         }
     }
+
+}
 
 extension RequestsViewModel: CLLocationManagerDelegate {
     
