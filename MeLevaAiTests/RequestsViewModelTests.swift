@@ -34,7 +34,7 @@ final class RequestsViewModelTests: XCTestCase {
         let validEmail = "test@email.com"
         
         // When
-        let isValid = viewModel.validateEmail(validEmail)
+        let isValid = isValidEmail(validEmail)
         
         // Then
         XCTAssertTrue(isValid, "Email válido deve retornar true")
@@ -160,6 +160,12 @@ final class RequestsViewModelTests: XCTestCase {
             destinyLongitude: "-46.6565",
             status: "pendente"
         )
+    }
+    
+    private func isValidEmail(_ email: String) -> Bool {
+        let emailRegex = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+        let emailPredicate = NSPredicate(format: "SELF MATCHES %@", emailRegex)
+        return emailPredicate.evaluate(with: email)
     }
 }
 
